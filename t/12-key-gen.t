@@ -30,6 +30,10 @@ SKIP: {
   ok($key->e, 'Public Exponet');
   ok($key->d, 'Private Exponet');
 
+  # diag 'N: ' . $key->n;
+  # diag 'E: ' . $key->e;
+  # diag 'D: ' . $key->d;
+
   is($key->e, 65537, 'Public exponent is correct');
   is(_b($key->n), 512, 'Modulus-Size is correct');
 
