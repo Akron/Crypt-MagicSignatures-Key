@@ -642,6 +642,7 @@ Crypt::MagicSignatures::Key - Key class for MagicSignatures
 L<Crypt::MagicSignatures::Key> implements MagicKeys as described in the
 L<MagicSignature Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html>.
 MagicSignature is a I<"robust mechanism for digitally signing nearly arbitrary messages">.
+See L<Crypt::MagicSignatures::Envelope> for using MagicKeys to sign MagicEnvelopes.
 
 B<This module is an early release! There may be significant changes in the future.>
 
@@ -770,8 +771,9 @@ is returned.
 
 Encodes a string as base-64 with URL safe characters.
 A second parameter indicates, if trailing equal signs
-are wanted. The default is true.
-This differs from L<MIME::Base64::encode_base64>.
+are wanted. The default is C<true>.
+This differs from
+L<encode_base64 in MIME::Base64|MIME::Base64/"encode_base64">.
 The function can be exported.
 
 
@@ -793,9 +795,11 @@ L<Digest::SHA>,
 L<Exporter>,
 L<Math::BigInt>,
 L<MIME::Base64>.
+
 L<Math::Prime::Util> and
 L<Math::Random::Secure> are necessary for key generation only.
-Either L<Math::BigInt::GMP> or L<Math::BigInt::Pari> are recommended
+
+Either L<Math::BigInt::GMP> (preferred) or L<Math::BigInt::Pari> are recommended
 for speed, as well as L<Math::Random::ISAAC::XS>.
 
 
