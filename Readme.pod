@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-Crypt::MagicSignatures::Key - Key class for MagicSignatures
+Crypt::MagicSignatures::Key - MagicKeys for the Salmon Protocol
 
 =head1 SYNOPSIS
 
@@ -20,7 +20,7 @@ Crypt::MagicSignatures::Key - Key class for MagicSignatures
 =head1 DESCRIPTION
 
 L<Crypt::MagicSignatures::Key> implements MagicKeys as described in the
-L<MagicSignature Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html>.
+L<MagicSignature Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html> to sign messages of the L<Salmon Protocol|http://www.salmon-protocol.org/>.
 MagicSignature is a I<"robust mechanism for digitally signing nearly arbitrary messages">.
 See L<Crypt::MagicSignatures::Envelope> for using MagicKeys to sign MagicEnvelopes.
 
