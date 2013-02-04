@@ -88,7 +88,7 @@ The MagicKey keysize in bits.
 
 The Constructor accepts MagicKeys in compact notation as
 described in the
-L<MagicSignatures Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html>
+L<MagicSignatures Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html#anchor13>
 or by attributes.
 
 If no C<n> attribute is given and L<Math::Prime::Util>
@@ -133,7 +133,7 @@ Returns a C<true> value on success and C<false> otherwise.
 
 Returns the public key as a string in compact notation as
 described in the
-L<MagicSignatures Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html>.
+L<MagicSignatures Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html#anchor13>.
 
 If a C<true> value is passed to the method,
 the full key (including the private exponent if existing)
