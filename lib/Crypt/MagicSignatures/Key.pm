@@ -13,7 +13,7 @@ use Math::BigInt try => 'GMP,Pari';
 use Exporter 'import';
 our @EXPORT_OK = qw(b64url_encode b64url_decode);
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 our $DEBUG = 0;
 our $GENERATOR;
 
@@ -490,7 +490,7 @@ sub _emsa_encode {
 
 
 # Convert from octet string to bigint
-sub _os2ip ($) {
+sub _os2ip {
   # Based on Crypt::RSA::DataFormat
 
   my $os = shift;
@@ -505,7 +505,7 @@ sub _os2ip ($) {
     # Maybe optimizable
     $result += $a * ($base**$val);
   };
-  return $result;
+  $result;
 };
 
 
@@ -513,7 +513,7 @@ sub _os2ip ($) {
 sub _i2osp {
   # Based on Crypt::RSA::DataFormat
 
-  my $num = Math::BigInt->new( shift );
+  my $num = Math::BigInt->new(shift);
   my $l = shift || 0;
 
   my $result = '';
@@ -535,7 +535,7 @@ sub _i2osp {
     $result = chr(0) x ($l - length($result)) . $result;
   };
 
-  return $result;
+  $result;
 };
 
 
@@ -552,7 +552,7 @@ sub _octet_len {
 sub _bitsize {
   my $int = Math::BigInt->new( shift );
   return 0 unless $int;
-  return ( length( $int->as_bin ) - 2 );
+  length( $int->as_bin ) - 2;
 };
 
 
@@ -580,18 +580,16 @@ sub _hex_to_b64url {
 
 # Returns the b64 urlsafe encoding of a string
 sub b64url_encode ($;$) {
-  my $v = shift;
-  my $p = defined $_[0] ? shift : 1;
+  return '' unless $_[0];
 
-  return '' unless $v;
+  my $v = $_[0];
 
   utf8::encode $v if utf8::is_utf8 $v;
   $v = encode_base64($v, '');
-  $v =~ tr{+/}{-_};
-  $v =~ tr{\t-\x0d }{}d;
+  $v =~ tr{+/\t-\x0d }{-_}d;
 
   # Trim padding or not
-  $v =~ s/\=+$// unless $p;
+  $v =~ s/\=+$// unless (defined $_[1] ? $_[1] : 1);
 
   return $v;
 };
@@ -604,8 +602,10 @@ sub b64url_decode ($) {
 
   $v =~ tr{-_}{+/};
 
+  my $padding;
+
   # Add padding
-  if (my $padding = (length($v) % 4)) {
+  if ($padding = (length($v) % 4)) {
     $v .= chr(61) x (4 - $padding);
   };
 
