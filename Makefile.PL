@@ -11,6 +11,7 @@ WriteMakefile(
     PREREQ_PM => {
       'Math::Prime::Util' => '0.10',
       'Math::Random::Secure' => '0.05',
+      'Carp' => 0,
       'Digest::SHA' => 0,
       'MIME::Base64' => 0,
       'Math::BigInt' => 0,

@@ -167,6 +167,7 @@ The function can be exported.
 =head1 DEPENDENCIES
 
 Core modules:
+L<Carp>,
 L<Digest::SHA>,
 L<Exporter>,
 L<Math::BigInt>,

@@ -641,8 +641,9 @@ Crypt::MagicSignatures::Key - Key class for MagicSignatures
 
 L<Crypt::MagicSignatures::Key> implements MagicKeys as described in the
 L<MagicSignature Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html>.
+MagicSignatures is a I<"robust mechanism for digitally signing nearly arbitrary messages">.
 
-B<THIS MODULE IS BETA! DO NOT USE IT FOR NOW!>
+B<This module is an early release! There may be significant changes in the future.>
 
 
 =head1 ATTRIBUTES
@@ -787,6 +788,7 @@ The function can be exported.
 =head1 DEPENDENCIES
 
 Core modules:
+L<Carp>,
 L<Digest::SHA>,
 L<Exporter>,
 L<Math::BigInt>,
