@@ -641,7 +641,7 @@ Crypt::MagicSignatures::Key - Key class for MagicSignatures
 
 L<Crypt::MagicSignatures::Key> implements MagicKeys as described in the
 L<MagicSignature Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html>.
-MagicSignatures is a I<"robust mechanism for digitally signing nearly arbitrary messages">.
+MagicSignature is a I<"robust mechanism for digitally signing nearly arbitrary messages">.
 
 B<This module is an early release! There may be significant changes in the future.>
 
@@ -742,7 +742,7 @@ L<RFC3447|http://www.ietf.org/rfc/rfc3447.txt>.
 
 Verifies a signature of a message based on the public
 component of the key.
-Returns a C<true> value on success, and C<false> otherwise.
+Returns a C<true> value on success and C<false> otherwise.
 
 
 =head2 C<to_string>
@@ -807,7 +807,9 @@ compatible with other implementations!
 
 =head1 SEE ALSO
 
-L<Crypt::RSA::DataFormat>, L<https://github.com/sivy/Salmon>.
+L<Crypt::MagicSignatures::Envelope>,
+L<Crypt::RSA::DataFormat>,
+L<https://github.com/sivy/Salmon>.
 
 =head1 AVAILABILITY
 
