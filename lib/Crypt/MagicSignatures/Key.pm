@@ -650,7 +650,7 @@ B<This module is an early release! There may be significant changes in the futur
 =head1 ATTRIBUTES
 
 
-=head2 C<n>
+=head2 n
 
   print $mkey->n;
   $mkey->n('456789...');
@@ -658,7 +658,7 @@ B<This module is an early release! There may be significant changes in the futur
 The MagicKey modulus.
 
 
-=head2 C<e>
+=head2 e
 
   print $mkey->e;
   $mkey->e(3);
@@ -667,7 +667,7 @@ The MagicKey public exponent.
 Defaults to C<65537>.
 
 
-=head2 C<d>
+=head2 d
 
   print $mkey->d;
   $mkey->d('234567...');
@@ -675,7 +675,7 @@ Defaults to C<65537>.
 The MagicKey private exponent.
 
 
-=head2 C<size>
+=head2 size
 
   print $mkey->size;
 
@@ -684,7 +684,7 @@ The MagicKey keysize in bits.
 
 =head1 METHODS
 
-=head2 C<new>
+=head2 new
 
   my $mkey = Crypt::MagicSignatures::Key->new(<<'MKEY');
     RSA.
@@ -717,7 +717,7 @@ In case no C<size> attribute is given, the default key size
 for generation is 512 bits.
 
 
-=head2 C<sign>
+=head2 sign
 
   my $sig = $mkey->sign('This is a message');
 
@@ -727,7 +727,7 @@ The signature algorithm is based on
 L<RFC3447|http://www.ietf.org/rfc/rfc3447.txt>.
 
 
-=head2 C<verify>
+=head2 verify
 
   my $sig = $priv_key->sign('This is a message');
 
@@ -746,7 +746,7 @@ component of the key.
 Returns a C<true> value on success and C<false> otherwise.
 
 
-=head2 C<to_string>
+=head2 to_string
 
   my $pub_key = $mkey->to_string;
   my $priv_key = $mkey->to_string(1);
@@ -762,7 +762,7 @@ is returned.
 
 =head1 FUNCTIONS
 
-=head2 C<b64url_encode>
+=head2 b64url_encode
 
   use Crypt::MagicSignatures::Key qw/b64url_encode/;
 
@@ -777,7 +777,7 @@ L<encode_base64 in MIME::Base64|MIME::Base64/"encode_base64">.
 The function can be exported.
 
 
-=head2 C<b64url_decode>
+=head2 b64url_decode
 
   use Crypt::MagicSignatures::Key qw/b64url_decode/;
 
