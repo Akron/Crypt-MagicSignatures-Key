@@ -352,6 +352,41 @@ sub to_string {
 };
 
 
+# Returns the b64 urlsafe encoding of a string
+sub b64url_encode ($;$) {
+  return '' unless $_[0];
+
+  my $v = $_[0];
+
+  utf8::encode $v if utf8::is_utf8 $v;
+  $v = encode_base64($v, '');
+  $v =~ tr{+/\t-\x0d }{-_}d;
+
+  # Trim padding or not
+  $v =~ s/\=+$// unless (defined $_[1] ? $_[1] : 1);
+
+  return $v;
+};
+
+
+# Returns the b64 urlsafe decoded string
+sub b64url_decode ($) {
+  my $v = shift;
+  return '' unless $v;
+
+  $v =~ tr{-_}{+/};
+
+  my $padding;
+
+  # Add padding
+  if ($padding = (length($v) % 4)) {
+    $v .= chr(61) x (4 - $padding);
+  };
+
+  return decode_base64($v);
+};
+
+
 # Get octet length of n
 sub _emLen {
   my $self = shift;
@@ -574,41 +609,6 @@ sub _hex_to_b64url {
   $num =~ s/^0x//;
   $num = ( ( ( length $num ) % 2 ) > 0 ) ? '0' . $num : $num;
   return b64url_encode( pack( "H*", $num ) );
-};
-
-
-# Returns the b64 urlsafe encoding of a string
-sub b64url_encode ($;$) {
-  return '' unless $_[0];
-
-  my $v = $_[0];
-
-  utf8::encode $v if utf8::is_utf8 $v;
-  $v = encode_base64($v, '');
-  $v =~ tr{+/\t-\x0d }{-_}d;
-
-  # Trim padding or not
-  $v =~ s/\=+$// unless (defined $_[1] ? $_[1] : 1);
-
-  return $v;
-};
-
-
-# Returns the b64 urlsafe decoded string
-sub b64url_decode ($) {
-  my $v = shift;
-  return '' unless $v;
-
-  $v =~ tr{-_}{+/};
-
-  my $padding;
-
-  # Add padding
-  if ($padding = (length($v) % 4)) {
-    $v .= chr(61) x (4 - $padding);
-  };
-
-  return decode_base64($v);
 };
 
 
