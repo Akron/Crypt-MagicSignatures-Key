@@ -1,4 +1,6 @@
 0.04 2013-02-05
+        - Introduce a secure signature string
+          compare to prevent timing attacks.
 
 0.03 2013-02-05
 	- Small documentation improvements.

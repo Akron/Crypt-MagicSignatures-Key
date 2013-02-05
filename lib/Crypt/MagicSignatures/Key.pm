@@ -401,10 +401,11 @@ sub _verify_emsa_pkcs1_v1_5 {
 
   my $s = _os2ip($S);
   my $m = _rsavp1($K, $s) or return;
-  my $EM_TEST = _emsa_encode($M, $k) or return;
+  my $EM_1 = _emsa_encode($M, $k) or return;
+  my $EM_2 = _i2osp($m, $k);
 
   # Signature is valid
-  return 1 if _i2osp($m, $k) eq $EM_TEST;
+  return _secure_equal($EM_1, $EM_2);
 
   # No success
   return undef;
@@ -614,6 +615,16 @@ sub b64url_decode ($) {
 };
 
 
+# Compare strings in linear time
+sub _secure_equal {
+  # Based on Mojo::Util
+  my ($a, $b) = @_;
+  return undef if length $a != length $b;
+  my $r = 0;
+  $r |= ord(substr $a, $_) ^ ord(substr $b, $_) for 0 .. length($a) - 1;
+  return $r == 0;
+};
+
 1;
 
 
@@ -813,7 +824,8 @@ compatible with other implementations!
 
 L<Crypt::MagicSignatures::Envelope>,
 L<Crypt::RSA::DataFormat>,
-L<https://github.com/sivy/Salmon>.
+L<https://github.com/sivy/Salmon>,
+L<Mojo::Util>.
 
 
 =head1 AVAILABILITY
