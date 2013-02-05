@@ -13,7 +13,7 @@ use Math::BigInt try => 'GMP,Pari';
 use Exporter 'import';
 our @EXPORT_OK = qw(b64url_encode b64url_decode);
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 our $DEBUG = 0;
 our $GENERATOR;
 
@@ -751,7 +751,6 @@ Returns a C<true> value on success and C<false> otherwise.
 
 Returns the public key as a string in
 L<compact notation|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html#anchor13>.
-
 If a C<true> value is passed to the method,
 the full key (including the private exponent if existing)
 is returned.
@@ -792,7 +791,6 @@ L<Digest::SHA>,
 L<Exporter>,
 L<Math::BigInt>,
 L<MIME::Base64>.
-
 L<Math::Prime::Util> and
 L<Math::Random::Secure> are necessary for key generation only.
 
