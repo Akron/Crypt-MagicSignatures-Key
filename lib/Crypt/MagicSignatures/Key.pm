@@ -657,15 +657,16 @@ Crypt::MagicSignatures::Key - MagicKeys for the Salmon Protocol
 
   my $sig = $mkey->sign('This is a message');
 
-  if ($mkey->verify('This is a message', $sig) {
-    print "The signature is valid for ' . $mkey->to_string;
+  if ($mkey->verify('This is a message', $sig)) {
+    print 'The signature is valid for ' . $mkey->to_string;
   };
 
 
 =head1 DESCRIPTION
 
 L<Crypt::MagicSignatures::Key> implements MagicKeys as described in the
-L<MagicSignatures Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html> to sign messages of the L<Salmon Protocol|http://www.salmon-protocol.org/>.
+L<MagicSignatures Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html>
+to sign messages of the L<Salmon Protocol|http://www.salmon-protocol.org/>.
 MagicSignatures is a I<"robust mechanism for digitally signing nearly arbitrary messages">.
 See L<Crypt::MagicSignatures::Envelope> for using MagicKeys to sign MagicEnvelopes.
 
@@ -731,9 +732,8 @@ The MagicKey keysize in bits.
   $mkey = Crypt::MagicSignatures::Key->new(size => 1024);
 
 
-The Constructor accepts MagicKeys in compact notation as
-described in the
-L<MagicSignatures Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html#anchor13>
+The Constructor accepts MagicKeys in
+L<compact notation|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html#anchor13>
 or by attributes.
 
 If no C<n> attribute is given and L<Math::Prime::Util>
@@ -757,13 +757,13 @@ L<RFC3447|http://www.ietf.org/rfc/rfc3447.txt>.
   my $sig = $priv_key->sign('This is a message');
 
   # Successfully verify signature
-  if ($pub_key->verify('This is a message', $sig) {
-    print "The signature is okay.";
+  if ($pub_key->verify('This is a message', $sig)) {
+    print 'The signature is okay.';
   }
 
   # Fail to verify signature
   else {
-    print "The signature is wrong!";
+    print 'The signature is wrong!';
   };
 
 Verifies a signature of a message based on the public
@@ -776,9 +776,8 @@ Returns a C<true> value on success and C<false> otherwise.
   my $pub_key = $mkey->to_string;
   my $priv_key = $mkey->to_string(1);
 
-Returns the public key as a string in compact notation as
-described in the
-L<MagicSignatures Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html#anchor13>.
+Returns the public key as a string in
+L<compact notation|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html#anchor13>.
 
 If a C<true> value is passed to the method,
 the full key (including the private exponent if existing)
@@ -840,6 +839,7 @@ compatible with other implementations!
 L<Crypt::MagicSignatures::Envelope>,
 L<Crypt::RSA::DataFormat>,
 L<https://github.com/sivy/Salmon>.
+
 
 =head1 AVAILABILITY
 
