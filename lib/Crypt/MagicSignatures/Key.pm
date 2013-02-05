@@ -404,11 +404,8 @@ sub _verify_emsa_pkcs1_v1_5 {
   my $EM_1 = _emsa_encode($M, $k) or return;
   my $EM_2 = _i2osp($m, $k);
 
-  # Signature is valid
+  # Secure signature comparation
   return _secure_equal($EM_1, $EM_2);
-
-  # No success
-  return undef;
 };
 
 
