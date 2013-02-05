@@ -13,7 +13,7 @@ use Math::BigInt try => 'GMP,Pari';
 use Exporter 'import';
 our @EXPORT_OK = qw(b64url_encode b64url_decode);
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 our $DEBUG = 0;
 our $GENERATOR;
 
