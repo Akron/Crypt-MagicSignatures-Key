@@ -179,8 +179,9 @@ L<MIME::Base64>.
 L<Math::Prime::Util> and
 L<Math::Random::Secure> are necessary for key generation only.
 
-Either L<Math::BigInt::GMP> (preferred) or L<Math::BigInt::Pari> are recommended
-for speed, as well as L<Math::Random::ISAAC::XS>.
+Either L<Math::BigInt::GMP> (preferred) or L<Math::BigInt::Pari>
+are strongly recommended for speed,
+as well as L<Math::Random::ISAAC::XS>.
 
 
 =head1 KNOWN BUGS AND LIMITATIONS

@@ -24,6 +24,7 @@ our $MAX_ROUNDS = 100;
 sub random_nbit_prime;
 sub prime_set_config;
 
+
 # Load Math::Prime::Util and Math::Random::Secure
 BEGIN {
   if (eval
@@ -47,7 +48,8 @@ sub new {
   return $_[0] if ref $_[0] && ref $_[0] eq __PACKAGE__;
 
   # MagicKey in string notation
-  if (@_ == 1 && $_[0] =~ /rsa/i ) {
+  if (@_ == 1 && index($_[0], 'RSA') >= 0) {
+
     my $string = shift;
     return unless $string;
 
@@ -64,7 +66,7 @@ sub new {
     my ($type, $mod, $exp, $private_exp) = split(/\./, $string);
 
     # The key is incorrect
-    if (uc($type) ne 'RSA') {
+    if ($type ne 'RSA') {
       carp "MagicKey type '$type' is not supported";
       return;
     };
@@ -212,7 +214,8 @@ sub n {
   else {
     my $n = Math::BigInt->new( shift );
 
-    return undef if $n->is_nan;
+    # n is not a number
+    carp 'n is not a number' and return undef if $n->is_nan;
 
     # Delete precalculated emLen and size
     delete $self->{emLen};
@@ -238,7 +241,8 @@ sub e {
   else {
     my $e = Math::BigInt->new( shift );
 
-    return undef if $e->is_nan;
+    # e is not a number
+    carp 'e is not a number' and return undef if $e->is_nan;
 
     return $self->{e} = $e;
   };
@@ -253,14 +257,15 @@ sub d {
 
   # Get value
   unless ($_[0]) {
-    return ($self->{d} //= Math::BigInt->bzero);
+    return $self->{d} // undef;
   }
 
   # Set value
   else {
     my $d = Math::BigInt->new( shift );
 
-    return if $d->is_nan;
+    # d is not a number
+    carp 'd is not a number' and return undef if $d->is_nan;
 
     return $self->{d} = $d;
   };
