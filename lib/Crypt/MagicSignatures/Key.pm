@@ -20,6 +20,10 @@ our $GENERATOR;
 # Maximum number of tests for random prime generation
 our $MAX_ROUNDS = 100;
 
+# Range of valid key sizes
+our $MIN_BITS   = 512;
+our $MAX_BITS  = 2048;
+
 # Primitives for Math::Prime::Util
 sub random_nbit_prime;
 sub prime_set_config;
@@ -60,7 +64,7 @@ sub new {
     $string =~ tr{\t-\x0d }{}d;
 
     # Ignore mime-type prolog if given
-    $string =~ s{^data\:application\/magic\-public\-key[,;:]}{}i;
+    $string =~ s{^data\:application\/magic(?:\-public|\-private)?\-key[,;:]}{}i;
 
     # Split MagicKey
     my ($type, $mod, $exp, $private_exp) = split(/\./, $string);
@@ -101,10 +105,7 @@ sub new {
 	$self->$_($param{$_}) if exists $param{$_};
       };
 
-      unless ($self->n) {
-	carp 'Key is not well defined';
-	return;
-      };
+      carp 'Key is not well defined' and return unless $self->n;
     }
 
     # Generate new key
@@ -117,10 +118,10 @@ sub new {
       };
 
       # Define key size
-      my $size = $param{size} || 512;
+      my $size = $param{size} || $MIN_BITS;
 
       # Key size is too short or impractical
-      return undef if $size < 512 || $size > 1024 || $size % 2;
+      return undef if $size < $MIN_BITS || $size > $MAX_BITS || $size % 2;
 
       # Public exponent
       my $e = $param{e};
@@ -189,10 +190,13 @@ sub new {
     };
   };
 
-  # Todo: Check that n is not tooo large!
-
   # Set size (bitsize length of modulus)
   $self->{size} = _bitsize( $self->n );
+
+  # Size is to small
+  if ($self->{size} < 512 || $self->{size} > $MAX_BITS)  {
+    carp 'Keysize is out of range' and return;
+  };
 
   # Set emLen (octet length of modulus)
   $self->{emLen} = _octet_len( $self->n );
@@ -287,18 +291,12 @@ sub sign {
   my ($self, $message) = @_;
 
   unless ($self->d) {
-    carp 'You can only sign with a private key';
-    return undef;
+    carp 'You can only sign with a private key' and return;
   };
 
   my $encoded_message = _sign_emsa_pkcs1_v1_5($self, $message);
 
   return b64url_encode($encoded_message);
-
-  # # Append padding - although that's not defined
-  # while ((length($encoded_message) % 4) != 0) {
-  #   $encoded_message .= '=';
-  # };
 };
 
 
@@ -355,7 +353,7 @@ sub to_string {
 sub _emLen {
   my $self = shift;
   return 0 unless $self->n;
-  return $self->{emLen} // ($self->{size} = _octet_len( $self->n ));
+  return $self->{emLen} // ($self->{emLen} = _octet_len( $self->n ));
 };
 
 
@@ -366,17 +364,15 @@ sub _sign_emsa_pkcs1_v1_5 {
   # key, message
   my ($K, $M) = @_;
 
+  # octet length of n
   my $k = $K->_emLen;
 
-  my $EM = _emsa_encode($M, $k, 'sha-256');
-
-  return unless $EM;
+  # encode message (Hash digest is always 'sha-256')
+  my $EM = _emsa_encode($M, $k) or return;
 
   my $m = _os2ip($EM);
   my $s = _rsasp1($K, $m);
-  my $S = _i2osp($s, $k);
-
-  return $S
+  _i2osp($s, $k); # S
 };
 
 
@@ -391,7 +387,6 @@ sub _verify_emsa_pkcs1_v1_5 {
 
   # The length of the signature is not
   # equivalent to the length of the RSA modulus
-  # Maybe _octet_len instead of length?
   if (length($S) != $k) {
     my $w = 'Invalid signature';
     if ($DEBUG) {
@@ -402,17 +397,14 @@ sub _verify_emsa_pkcs1_v1_5 {
   };
 
   my $s = _os2ip($S);
-  my $m = _rsavp1($K, $s);
-  return unless $m;
-
-  my $EM_1 = _i2osp($m, $k);
-  my $EM_2 = _emsa_encode($M, $k, 'sha-256');
+  my $m = _rsavp1($K, $s) or return;
+  my $EM_TEST = _emsa_encode($M, $k) or return;
 
   # Signature is valid
-  return 1 if $EM_1 eq $EM_2;
+  return 1 if _i2osp($m, $k) eq $EM_TEST;
 
   # No success
-  return;
+  return undef;
 };
 
 
@@ -424,15 +416,10 @@ sub _rsasp1 {
   my ($K, $m) = @_;
 
   if ($m >= $K->n) {
-    carp 'Message representative out of range';
-    return;
+    carp 'Message representative out of range' and return;
   };
 
-  if ($K->n) {
-    return Math::BigInt->new($m)->bmodpow($K->d, $K->n);
-  };
-
-  return;
+  return $m->bmodpow($K->d, $K->n);
 };
 
 
@@ -444,7 +431,7 @@ sub _rsavp1 {
   my ($K, $s) = @_;
 
   # Is signature in range?
-  if ($s < 0 || $s > $K->n) {
+  if ($s > $K->n || $s < 0) {
     my $w = 'Signature representative out of range';
     if ($DEBUG) {
       if ($s < 0) {
@@ -461,11 +448,7 @@ sub _rsavp1 {
     return;
   };
 
-  if ($K->n) {
-    return Math::BigInt->new($s)->bmodpow($K->e, $K->n);
-  };
-
-  return;
+  return $s->bmodpow($K->e, $K->n);
 };
 
 
@@ -473,27 +456,18 @@ sub _rsavp1 {
 sub _emsa_encode {
   # http://www.ietf.org/rfc/rfc3447.txt [Ch. 9.2]
 
-  my ($M, $emLen, $hash_digest) = @_;
+  my ($M, $emLen) = @_;
 
   # No message given
   return unless $M;
 
-  $hash_digest ||= 'sha-256';
+  # Hash digest is always 'sha-256'
 
-  # Create Hash with der padding
-  my ($H, $T, $tLen);
-  if ($hash_digest eq 'sha-256') {
-    $H = sha256($M);
-    $T = "\x30\x31\x30\x0d\x06\x09\x60\x86\x48" .
-      "\x01\x65\x03\x04\x02\x01\x05\x00\x04\x20" . $H;
-    $tLen = length( $T );
-  }
-
-  # Hash-value is unknown
-  else {
-    carp 'Hash value currently not supported';
-    return;
-  };
+  # Create Hash with DER padding
+  my $H = sha256($M);
+  my $T = "\x30\x31\x30\x0d\x06\x09\x60\x86\x48" .
+    "\x01\x65\x03\x04\x02\x01\x05\x00\x04\x20" . $H;
+  my $tLen = length( $T );
 
   # TODO:
   # if ($emlen < length($T) + 10) {
@@ -503,7 +477,6 @@ sub _emsa_encode {
 
   my $PS = "\xFF" x ($emLen - $tLen - 3);
   my $EM = "\x00\x01" . $PS . "\x00" . $T;
-
   return $EM;
 };
 
@@ -513,18 +486,17 @@ sub _os2ip {
   # Based on Crypt::RSA::DataFormat
 
   my $os = shift;
+
   my $l = length($os);
   return undef if $l > 30_000;
 
   my $base = Math::BigInt->new(256);
-  my $result = 0;
-  for (0 .. $l-1) {
-    my ($c) = unpack "x$_ a", $os;
-    my $a = int(ord($c));
-    my $val = int($l - $_ - 1);
-
+  my $result = Math::BigInt->bzero;
+  for (0 .. $l - 1) {
     # Maybe optimizable
-    $result += $a * ($base**$val);
+    $result->badd(
+      int(ord(unpack "x$_ a", $os)) * ($base ** int($l - $_ - 1))
+    );
   };
   $result;
 };
@@ -586,8 +558,9 @@ sub _b64url_to_hex {
   # Based on
   # https://github.com/sivy/Salmon/blob/master/lib/Salmon/
   #         MagicSignatures/SignatureAlgRsaSha256.pm
-  my $num = "0x" . unpack( "H*", b64url_decode( shift ) );
-  return Math::BigInt->from_hex( $num );
+  return Math::BigInt->from_hex(
+    "0x" . unpack( "H*", b64url_decode( shift ) )
+  );
 };
 
 
@@ -598,7 +571,7 @@ sub _hex_to_b64url {
 
   my $num = Math::BigInt->new( shift )->as_hex;
   $num =~ s/^0x//;
-  $num = ( ( ( length $num ) % 2 ) > 0 ) ? "0$num" : $num;
+  $num = ( ( ( length $num ) % 2 ) > 0 ) ? '0' . $num : $num;
   return b64url_encode( pack( "H*", $num ) );
 };
 

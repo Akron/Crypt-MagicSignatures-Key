@@ -1,5 +1,7 @@
 0.03 2013-02-05
 	- Small documentation improvements.
+	- Small speed improvements in signing.
+	- Fixed bug in &_emLen.
 
 0.02 2013-02-05
         - Tiny speed improvements.
