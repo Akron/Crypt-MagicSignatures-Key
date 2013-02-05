@@ -1,6 +1,7 @@
-0.02 2013-02-04
+0.02 2013-02-05
         - Tiny speed improvements.
 	- Documentation tweaks.
+	- Make code more secure (do not accept NAN for number values).
 
 0.01 2013-02-04
         - Initial submission to GitHub.

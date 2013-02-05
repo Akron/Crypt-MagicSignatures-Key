@@ -92,12 +92,14 @@ sub new {
     # RSA complete description
     if (defined $param{n}) {
 
-      my %self;
-      foreach (qw/n e d/) {
-	$self{$_} = Math::BigInt->new($param{$_}) if exists $param{$_};
-      };
+      $self = bless {}, $class;
 
-      $self = bless \%self, $class;
+      foreach (qw/n e d/) {
+	if (exists $param{$_}) {
+#	  my $x = Math::BigInt->new($param{$_});
+	  $self->$_($param{$_});# = $x unless $x->is_nan;
+	};
+      };
 
       unless ($self->n) {
 	carp 'Key is not well defined';
@@ -118,7 +120,7 @@ sub new {
       my $size = $param{size} || 512;
 
       # Key size is too short or impractical
-      return undef if $size < 512 || $size % 2;
+      return undef if $size < 512 || $size > 1024 || $size % 2;
 
       # Public exponent
       my $e = $param{e};
@@ -167,13 +169,14 @@ sub new {
       # Bless object
       $self = bless {}, $class;
 
+      # Set e
       $self->e($e) if $e;
 
       # Calculate phi
       my $phi = ($p - 1) * ($q - 1);
 
       # Calculate multiplicative inverse of e modulo phi
-      my $d = Math::BigInt->new($self->e)->bmodinv($phi);
+      my $d = $self->e->copy->bmodinv($phi);
 
       # $d is too short
       goto CALC_KEY if _bitsize($d) < $size / 4;
@@ -186,11 +189,13 @@ sub new {
     };
   };
 
-  # Set emLen (octet length of modulus)
-  $self->{emLen} = _octet_len( $self->n );
+  # Todo: Check that n is not tooo large!
 
   # Set size (bitsize length of modulus)
   $self->{size} = _bitsize( $self->n );
+
+  # Set emLen (octet length of modulus)
+  $self->{emLen} = _octet_len( $self->n );
 
   return $self;
 };
@@ -202,17 +207,20 @@ sub n {
 
   # Get value
   unless ($_[0]) {
-    return $self->{n} // 0;
+    return ($self->{n} //= Math::BigInt->bzero);
   }
 
   # Set value
-  elsif ($_[0] =~ /^\d+$/) {
+  else {
+    my $n = Math::BigInt->new( shift );
+
+    return undef if $n->is_nan;
 
     # Delete precalculated emLen and size
     delete $self->{emLen};
     delete $self->{size};
 
-    return $self->{n} = Math::BigInt->new( shift );
+    return $self->{n} = $n;
   };
 
   return undef;
@@ -225,12 +233,16 @@ sub e {
 
   # Get value
   unless ($_[0]) {
-    return $self->{e} // 65537;
+    return ($self->{e} //= Math::BigInt->new('65537'));
   }
 
   # Set value
-  elsif ($_[0] =~ /^\d+$/) {
-    return $self->{e} = Math::BigInt->new( shift );
+  else {
+    my $e = Math::BigInt->new( shift );
+
+    return undef if $e->is_nan;
+
+    return $self->{e} = $e;
   };
 
   return undef;
@@ -243,12 +255,16 @@ sub d {
 
   # Get value
   unless ($_[0]) {
-    return $self->{d} // 0;
+    return ($self->{d} //= Math::BigInt->bzero);
   }
 
   # Set value
-  elsif ($_[0] =~ /^\d+$/) {
-    return $self->{d} = Math::BigInt->new( shift );
+  else {
+    my $d = Math::BigInt->new( shift );
+
+    return if $d->is_nan;
+
+    return $self->{d} = $d;
   };
 
   return undef;
@@ -494,9 +510,11 @@ sub _os2ip {
   # Based on Crypt::RSA::DataFormat
 
   my $os = shift;
+  my $l = length($os);
+  return undef if $l > 30_000;
+
   my $base = Math::BigInt->new(256);
   my $result = 0;
-  my $l = length($os);
   for (0 .. $l-1) {
     my ($c) = unpack "x$_ a", $os;
     my $a = int(ord($c));
@@ -514,6 +532,10 @@ sub _i2osp {
   # Based on Crypt::RSA::DataFormat
 
   my $num = Math::BigInt->new(shift);
+
+  return if $num->is_nan;
+  return if $num->length > 30_000;
+
   my $l = shift || 0;
 
   my $result = '';

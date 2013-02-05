@@ -35,6 +35,7 @@ SKIP: {
   # diag 'D: ' . $key->d;
 
   is($key->e, 65537, 'Public exponent is correct');
+
   is(_b($key->n), 512, 'Modulus-Size is correct');
 
   ok(my $sig = $key->sign('This is a message'), 'Signing');
