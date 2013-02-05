@@ -94,11 +94,9 @@ sub new {
 
       $self = bless {}, $class;
 
+      # Set attributes
       foreach (qw/n e d/) {
-	if (exists $param{$_}) {
-#	  my $x = Math::BigInt->new($param{$_});
-	  $self->$_($param{$_});# = $x unless $x->is_nan;
-	};
+	$self->$_($param{$_}) if exists $param{$_};
       };
 
       unless ($self->n) {
@@ -821,8 +819,9 @@ L<MIME::Base64>.
 L<Math::Prime::Util> and
 L<Math::Random::Secure> are necessary for key generation only.
 
-Either L<Math::BigInt::GMP> (preferred) or L<Math::BigInt::Pari> are recommended
-for speed, as well as L<Math::Random::ISAAC::XS>.
+Either L<Math::BigInt::GMP> (preferred) or L<Math::BigInt::Pari>
+are strongly recommended for speed,
+as well as L<Math::Random::ISAAC::XS>.
 
 
 =head1 KNOWN BUGS AND LIMITATIONS
