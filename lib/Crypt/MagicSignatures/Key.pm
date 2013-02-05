@@ -715,7 +715,8 @@ or by attributes.
 If no C<n> attribute is given and L<Math::Prime::Util>
 and L<Math::Random::Secure> are installed, a new key will be generated.
 In case no C<size> attribute is given, the default key size
-for generation is 512 bits.
+for generation is 512 bits, which is also the minimum size.
+The maximum size is 2048 bits.
 
 
 =head2 sign
