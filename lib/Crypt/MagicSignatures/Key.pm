@@ -792,15 +792,10 @@ The function can be exported.
 
 =head1 DEPENDENCIES
 
-Core modules:
-L<Carp>,
-L<Digest::SHA>,
-L<Exporter>,
-L<Math::BigInt>,
-L<MIME::Base64>.
-
-L<Math::Prime::Util> and
-L<Math::Random::Secure> are necessary for key generation only.
+For signing and verification there are no dependencies
+other than Perl 5.10 and core modules.
+For key generation L<Math::Prime::Util> and
+L<Math::Random::Secure> are necessary.
 
 Either L<Math::BigInt::GMP> (preferred) or L<Math::BigInt::Pari>
 are strongly recommended for speed,
