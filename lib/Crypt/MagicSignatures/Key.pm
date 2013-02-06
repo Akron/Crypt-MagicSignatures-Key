@@ -439,8 +439,13 @@ sub _verify_emsa_pkcs1_v1_5 {
   my $EM_1 = _emsa_encode($M, $k) or return;
   my $EM_2 = _i2osp($m, $k);
 
-  # Secure signature comparation
-  return _secure_equal($EM_1, $EM_2);
+  # Secure signature comparation for timing attacks
+  # Based on Mojo::Util::secure_compare
+  return undef if (my $l_em1 = length $EM_1) != length $EM_2;
+
+  my $r = 0;
+  $r |= ord(substr $EM_1, $_) ^ ord(substr $EM_2, $_) for 0 .. $l_em1 - 1;
+  return $r == 0;
 };
 
 
@@ -612,16 +617,6 @@ sub _hex_to_b64url {
 };
 
 
-# Compare strings in linear time
-sub _secure_equal {
-  # Based on Mojo::Util
-  my ($a, $b) = @_;
-  return undef if length $a != length $b;
-  my $r = 0;
-  $r |= ord(substr $a, $_) ^ ord(substr $b, $_) for 0 .. length($a) - 1;
-  return $r == 0;
-};
-
 1;
 
 
@@ -781,7 +776,7 @@ Encodes a string as base-64 with URL safe characters.
 A second parameter indicates, if trailing equal signs
 are wanted. The default is C<true>.
 This differs from
-L<encode_base64 in MIME::Base64|MIME::Base64/"encode_base64">.
+L<MIME::Base64::encode_base64|MIME::Base64/"encode_base64">.
 The function can be exported.
 
 
@@ -822,7 +817,7 @@ compatible with other implementations!
 L<Crypt::MagicSignatures::Envelope>,
 L<Crypt::RSA::DataFormat>,
 L<https://github.com/sivy/Salmon>,
-L<Mojo::Util>.
+L<Mojo::Util::secure_compare|Mojo::Util/"secure_compare">.
 
 
 =head1 AVAILABILITY
@@ -832,7 +827,7 @@ L<Mojo::Util>.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2012-2013, Nils Diewald.
+Copyright (C) 2012-2013, L<Nils Diewald|http://nils-diewald.de/>.
 
 This program is free software, you can redistribute it
 and/or modify it under the same terms as Perl.
