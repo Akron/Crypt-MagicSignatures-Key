@@ -1,4 +1,6 @@
-0.04 2013-02-05
+0.05 2013-02-06
+
+0.04 2013-02-06
         - Introduce a secure signature string
           compare to prevent timing attacks.
 

@@ -16,7 +16,7 @@ use Math::BigInt try => 'GMP,Pari';
 use Exporter 'import';
 our @EXPORT_OK = qw(b64url_encode b64url_decode);
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 our $DEBUG = 0;
 our $GENERATOR;
 
@@ -827,7 +827,7 @@ L<Mojo::Util::secure_compare|Mojo::Util/"secure_compare">.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2012-2013, Nils Diewald.
+Copyright (C) 2012-2013, L<Nils Diewald|http://nils-diewald.de/>.
 
 This program is free software, you can redistribute it
 and/or modify it under the same terms as Perl.
