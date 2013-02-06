@@ -798,6 +798,7 @@ L<Digest::SHA>,
 L<Exporter>,
 L<Math::BigInt>,
 L<MIME::Base64>.
+
 L<Math::Prime::Util> and
 L<Math::Random::Secure> are necessary for key generation only.
 
@@ -808,7 +809,7 @@ as well as L<Math::Random::ISAAC::XS>.
 
 =head1 KNOWN BUGS AND LIMITATIONS
 
-The signing and verifification is not guaranteed to be
+The signing and verification is not guaranteed to be
 compatible with other implementations!
 
 
