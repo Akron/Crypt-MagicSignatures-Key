@@ -188,8 +188,7 @@ compatible with other implementations!
 
 L<Crypt::MagicSignatures::Envelope>,
 L<Crypt::RSA::DataFormat>,
-L<https://github.com/sivy/Salmon>,
-L<Mojo::Util::secure_compare|Mojo::Util/"secure_compare">.
+L<https://github.com/sivy/Salmon>.
 
 
 =head1 AVAILABILITY

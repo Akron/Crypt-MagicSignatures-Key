@@ -17,20 +17,21 @@ use Exporter 'import';
 our @EXPORT_OK = qw(b64url_encode b64url_decode);
 
 our $VERSION = '0.05';
-our $DEBUG = 0;
 our $GENERATOR;
 
 # Maximum number of tests for random prime generation
-our $MAX_ROUNDS = 100;
+use constant MAX_ROUNDS => 100;
 
 # Range of valid key sizes
-our $MIN_BITS   = 512;
-our $MAX_BITS  = 2048;
+use constant MIN_BITS => 512;
+use constant MAX_BITS => 2048;
+
+# Maximum number length for i2osp and os2ip
+use constant NUM_LENGTH => 30_000;
 
 # Primitives for Math::Prime::Util
 sub random_nbit_prime;
 sub prime_set_config;
-
 
 # Load Math::Prime::Util and Math::Random::Secure
 BEGIN {
@@ -121,10 +122,10 @@ sub new {
       };
 
       # Define key size
-      my $size = $param{size} || $MIN_BITS;
+      my $size = $param{size} || MIN_BITS;
 
       # Key size is too short or impractical
-      return undef if $size < $MIN_BITS || $size > $MAX_BITS || $size % 2;
+      return undef if $size < MIN_BITS || $size > MAX_BITS || $size % 2;
 
       # Public exponent
       my $e = $param{e};
@@ -133,7 +134,7 @@ sub new {
       my $psize = int( $size / 2 );
 
       my $n;
-      my $m = $MAX_ROUNDS;
+      my $m = MAX_ROUNDS;
 
       my ($p, $q);
 
@@ -166,8 +167,7 @@ sub new {
       };
 
       unless ($m > 0) {
-	carp 'Maximum rounds for key generation is reached';
-	return;
+	carp 'Maximum rounds for key generation is reached' and return;
       };
 
       # Bless object
@@ -197,7 +197,7 @@ sub new {
   $self->{size} = _bitsize( $self->n );
 
   # Size is to small
-  if ($self->{size} < 512 || $self->{size} > $MAX_BITS)  {
+  if ($self->{size} < 512 || $self->{size} > MAX_BITS)  {
     carp 'Keysize is out of range' and return;
   };
 
@@ -418,34 +418,20 @@ sub _sign_emsa_pkcs1_v1_5 {
 sub _verify_emsa_pkcs1_v1_5 {
   # http://www.ietf.org/rfc/rfc3447.txt [Ch. 8.2.2]
 
-  # key-object, message, signature
+  # key, message, signature
   my ($K, $M, $S) = @_;
 
   my $k = $K->_emLen;
 
   # The length of the signature is not
   # equivalent to the length of the RSA modulus
-  if (length($S) != $k) {
-    my $w = 'Invalid signature';
-    if ($DEBUG) {
-      $w .= ' s-length: ' . length($S) . ' != emLen ' . $k;
-    };
-    carp $w;
-    return;
-  };
+  carp 'Invalid signature' and return if length($S) != $k;
 
   my $s = _os2ip($S);
   my $m = _rsavp1($K, $s) or return;
-  my $EM_1 = _emsa_encode($M, $k) or return;
-  my $EM_2 = _i2osp($m, $k);
+  my $EM = _emsa_encode($M, $k) or return;
 
-  # Secure signature comparation for timing attacks
-  # Based on Mojo::Util::secure_compare
-  return undef if (my $l_em1 = length $EM_1) != length $EM_2;
-
-  my $r = 0;
-  $r |= ord(substr $EM_1, $_) ^ ord(substr $EM_2, $_) for 0 .. $l_em1 - 1;
-  return $r == 0;
+  return $EM eq _i2osp($m, $k);
 };
 
 
@@ -473,20 +459,7 @@ sub _rsavp1 {
 
   # Is signature in range?
   if ($s > $K->n || $s < 0) {
-    my $w = 'Signature representative out of range';
-    if ($DEBUG) {
-      if ($s < 0) {
-	$w .= ": $s < 0 (signature)";
-      }
-
-      else {
-	$w .= ": $s (signature) > " . $K->n . ' (n)';
-      };
-    };
-
-    # Warning
-    carp $w;
-    return;
+    carp 'Signature representative out of range' and return;
   };
 
   return $s->bmodpow($K->e, $K->n);
@@ -506,19 +479,15 @@ sub _emsa_encode {
 
   # Create Hash with DER padding
   my $H = sha256($M);
-  my $T = "\x30\x31\x30\x0d\x06\x09\x60\x86\x48" .
-    "\x01\x65\x03\x04\x02\x01\x05\x00\x04\x20" . $H;
+  my $T = "\x30\x31\x30\x0d\x06\x09\x60\x86\x48\x01" .
+          "\x65\x03\x04\x02\x01\x05\x00\x04\x20" . $H;
   my $tLen = length( $T );
 
-  # TODO:
-  # if ($emlen < length($T) + 10) {
-  #   warn "Intended encoded message length too short."
-  #   return;
-  # };
+  if ($emLen < $tLen + 11) {
+    carp 'Intended encoded message length too short' and return;
+  };
 
-  my $PS = "\xFF" x ($emLen - $tLen - 3);
-  my $EM = "\x00\x01" . $PS . "\x00" . $T;
-  return $EM;
+  return "\x00\x01" . ("\xFF" x ($emLen - $tLen - 3)) . "\x00" . $T;
 };
 
 
@@ -529,7 +498,7 @@ sub _os2ip {
   my $os = shift;
 
   my $l = length($os);
-  return undef if $l > 30_000;
+  return undef if $l > NUM_LENGTH;
 
   my $base = Math::BigInt->new(256);
   my $result = Math::BigInt->bzero;
@@ -550,7 +519,7 @@ sub _i2osp {
   my $num = Math::BigInt->new(shift);
 
   return if $num->is_nan;
-  return if $num->length > 30_000;
+  return if $num->length > NUM_LENGTH;
 
   my $l = shift || 0;
 
@@ -812,8 +781,7 @@ compatible with other implementations!
 
 L<Crypt::MagicSignatures::Envelope>,
 L<Crypt::RSA::DataFormat>,
-L<https://github.com/sivy/Salmon>,
-L<Mojo::Util::secure_compare|Mojo::Util/"secure_compare">.
+L<https://github.com/sivy/Salmon>.
 
 
 =head1 AVAILABILITY
