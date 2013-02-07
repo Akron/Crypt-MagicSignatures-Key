@@ -1,4 +1,4 @@
-0.05 2013-02-06
+0.05 2013-02-07
 	- Small documentation improvements.
 	- Timing attacks are by nature unlikely
 	  (for self-signing without public keys)
