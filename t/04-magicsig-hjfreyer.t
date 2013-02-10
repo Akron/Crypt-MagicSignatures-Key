@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use Test::More tests => 16;
+use Test::More;
 use Math::BigInt try => 'GMP,Pari';
 use strict;
 use warnings;
@@ -126,7 +126,13 @@ is ($s, '80055379592861'.
       '9524960279363800'.
       '402058130813', 'rsasp1 sign');
 
-my $S = b64url_encode(*{"${module}::_i2osp"}->($s, length($mkey->n)));
+is(length($mkey->n), 154, 'n length');
+
+my $string = *{"${module}::_i2osp"}->($s, length($mkey->n));
+
+is(length($string), length($mkey->n), '_i2osp for Win32 test');
+
+my $S = b64url_encode($string);
 
 is ($S, 'AAAAAAAAAAAAAAAAAAAAAAAAA'.
         'AAAAAAAAAAAAAAAAAAAAAAAAA'.
@@ -139,3 +145,4 @@ is ($S, 'AAAAAAAAAAAAAAAAAAAAAAAAA'.
 	'rYDu83821fQ==',
     'SIG i2osp b64url_encode');
 
+done_testing;

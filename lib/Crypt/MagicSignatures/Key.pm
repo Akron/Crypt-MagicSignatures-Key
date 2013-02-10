@@ -16,7 +16,7 @@ use Math::BigInt try => 'GMP,Pari';
 use Exporter 'import';
 our @EXPORT_OK = qw(b64url_encode b64url_decode);
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 our $GENERATOR;
 
 # Maximum number of tests for random prime generation
@@ -494,6 +494,7 @@ sub _emsa_encode {
 # Convert from octet string to bigint
 sub _os2ip {
   # Based on Crypt::RSA::DataFormat
+  # See also Convert::ASN1
 
   my $os = shift;
 
@@ -515,6 +516,7 @@ sub _os2ip {
 # Convert from bigint to octet string
 sub _i2osp {
   # Based on Crypt::RSA::DataFormat
+  # See also Convert::ASN1
 
   my $num = Math::BigInt->new(shift);
 
@@ -559,6 +561,7 @@ sub _octet_len {
 sub _bitsize {
   my $int = Math::BigInt->new( shift );
   return 0 unless $int;
+  # Trim leading '0b'
   length( $int->as_bin ) - 2;
 };
 
@@ -568,8 +571,8 @@ sub _b64url_to_hex {
   # Based on
   # https://github.com/sivy/Salmon/blob/master/lib/Salmon/
   #         MagicSignatures/SignatureAlgRsaSha256.pm
-  return Math::BigInt->from_hex(
-    "0x" . unpack( "H*", b64url_decode( shift ) )
+  return Math::BigInt->new(
+    '0x' . unpack( "H*", b64url_decode( shift ) )
   );
 };
 
@@ -579,8 +582,10 @@ sub _hex_to_b64url {
   # https://github.com/sivy/Salmon/blob/master/lib/Salmon/
   #         MagicSignatures/SignatureAlgRsaSha256.pm
 
-  my $num = Math::BigInt->new( shift )->as_hex;
-  $num =~ s/^0x//;
+  # Trim leading '0x'
+  my $num = substr(Math::BigInt->new( shift )->as_hex, 2);
+
+  # Add leading zero padding
   $num = ( ( ( length $num ) % 2 ) > 0 ) ? '0' . $num : $num;
   return b64url_encode( pack( "H*", $num ) );
 };

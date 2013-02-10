@@ -28,8 +28,8 @@ my $test_msg = 'This is a small message test.';
 my $mod = 1024;
 my ($e, $m, $s);
 
-my $n = Math::BigInt->from_hex(
-  '9ec4d483330916b69eee4e9b7614eafc4fbf60e74b5127a3ff5bd9d48c7ecf8418d94d1e60388b' .
+my $n = Math::BigInt->new(
+  '0x9ec4d483330916b69eee4e9b7614eafc4fbf60e74b5127a3ff5bd9d48c7ecf8418d94d1e60388b' .
     'b68546f8bc92deb1974b9def6748fbb4ec93029ea8b7bea36f61c5c6aeedfd512a0f765846fad5' .
       'edacb08c3d75cf1d43b48b394c94323c3f3e9ba6612f93fe2900134217433afb088b5ca33fc4e6' .
 	'b270194df077d2b6592743');

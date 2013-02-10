@@ -1,3 +1,6 @@
+0.06 2013-02-10
+        - PATCH: Math::BigInt versions on OpenBSD.
+          
 0.05 2013-02-07
 	- Small documentation improvements.
 	- Timing attacks are by nature unlikely
