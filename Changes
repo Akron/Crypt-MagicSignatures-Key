@@ -1,5 +1,6 @@
 0.06 2013-02-12
         - PATCH: Math::BigInt versions on OpenBSD.
+	- PATCH: Math::BigInt for base in i2osp for Win32.
 	- Small code improvements.
           
 0.05 2013-02-07

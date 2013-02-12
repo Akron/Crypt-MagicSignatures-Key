@@ -513,12 +513,12 @@ sub _i2osp {
   return if $num->length > NUM_LENGTH;
 
   my $l = shift || 0;
+  my $base = Math::BigInt->new(256);
 
   my $result = '';
 
-  if ($l && $num > ( 256 ** $l )) {
-    carp 'i2osp error - Integer is to short';
-    return;
+  if ($l && $num > ( $base ** $l )) {
+    carp 'i2osp error - Integer is to short' and return;
   };
 
   do {

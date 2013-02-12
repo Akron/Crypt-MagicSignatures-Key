@@ -45,22 +45,30 @@ my $test_key =
 my $mkey = Crypt::MagicSignatures::Key->new($test_key);
 
 ok($mkey, 'Magic-Key parsed');                     # 8
-ok($mkey->n eq '80312837890751965650228915'.
-               '46563591368344944062154100'.
-               '50964539889229343337085989'.
-               '19433064399074548837475344'.
-               '93461257620351548796452092'.
-               '307094036643522661681091',
-                        'M-Key modulus correct');  # 9
-ok($mkey->d eq '24118237980497878083558223'.
-               '37426462024816467706597110'.
-               '82488260212703094530069868'.
-               '86574485408953662105923805'.
-               '76050280953899102635751538'.
-               '748696981555132000814065',
-                        'M-Key private exponent'); # 10
-ok($mkey->e == 65537,   'M-Key exponent');         # 11
-ok($mkey->_emLen == 64,  'M-Key length correct');   # 12
+
+my $n_test =
+  '80312837890751965650228915'.
+  '46563591368344944062154100'.
+  '50964539889229343337085989'.
+  '19433064399074548837475344'.
+  '93461257620351548796452092'.
+  '307094036643522661681091';
+
+my $d_test =
+  '24118237980497878083558223'.
+  '37426462024816467706597110'.
+  '82488260212703094530069868'.
+  '86574485408953662105923805'.
+  '76050280953899102635751538'.
+  '748696981555132000814065';
+
+my $e_test = 65537;
+my $emLen_test = 64;
+
+is($mkey->n, $n_test, 'M-Key modulus correct');           # 9
+is($mkey->d, $d_test, 'M-Key private exponent');          # 10
+is($mkey->e, $e_test,   'M-Key exponent');                # 11
+is($mkey->_emLen, $emLen_test,  'M-Key length correct');  # 12
 
 my $test_public_key = $test_key;
 $test_public_key =~ s{\.[^\.]+$}{};
@@ -129,6 +137,21 @@ is ($s, '80055379592861'.
 is(length($mkey->n), 154, 'n length');
 
 my $string = *{"${module}::_i2osp"}->($s, length($mkey->n));
+
+# i2osp error - Integer is to short at t/04-magicsig-hjfreyer.t line 131.
+#   Failed test '_i2osp for Win32 test'
+#   at t/04-magicsig-hjfreyer.t line 133.
+#          got: undef
+#     expected: '154'
+#   Failed test 'SIG i2osp b64url_encode'
+#   at t/04-magicsig-hjfreyer.t line 137.
+#          got: ''
+#     expected: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'.
+#               'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'.
+#               'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'.
+#               'AAAAAAAAAAAAmNpBIpTUOESnuQMlS8aWZ4hw'.
+#               'dSwWnMstrn0F3L9GHDXa238fN3Bx3Rl0yvVE'.
+#               'SM_eZuocLsp9ubUrYDu83821fQ=='
 
 is(length($string), length($mkey->n), '_i2osp for Win32 test');
 
