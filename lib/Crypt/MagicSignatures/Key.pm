@@ -109,6 +109,7 @@ sub new {
 	$self->$_($param{$_}) if exists $param{$_};
       };
 
+      # Modulus was not defined
       carp 'Key is not well defined' and return unless $self->n;
     }
 
@@ -157,7 +158,7 @@ sub new {
 	  };
 	};
 
-	# Calculate n
+	# Calculate modulus
 	$n = $p * $q;
 
 	# Bitsize is correct based on given size
@@ -215,23 +216,19 @@ sub n {
   # Get value
   unless ($_[0]) {
     return ($self->{n} //= Math::BigInt->bzero);
-  }
-
-  # Set value
-  else {
-    my $n = Math::BigInt->new( shift );
-
-    # n is not a number
-    carp 'n is not a number' and return undef if $n->is_nan;
-
-    # Delete precalculated emLen and size
-    delete $self->{emLen};
-    delete $self->{size};
-
-    return $self->{n} = $n;
   };
 
-  return undef;
+  # Set value
+  my $n = Math::BigInt->new( shift );
+
+  # n is not a number
+  carp 'n is not a number' and return undef if $n->is_nan;
+
+  # Delete precalculated emLen and size
+  delete $self->{emLen};
+  delete $self->{size};
+
+  return $self->{n} = $n;
 };
 
 
@@ -242,19 +239,15 @@ sub e {
   # Get value
   unless ($_[0]) {
     return ($self->{e} //= Math::BigInt->new('65537'));
-  }
-
-  # Set value
-  else {
-    my $e = Math::BigInt->new( shift );
-
-    # e is not a number
-    carp 'e is not a number' and return undef if $e->is_nan;
-
-    return $self->{e} = $e;
   };
 
-  return undef;
+  # Set value
+  my $e = Math::BigInt->new( shift );
+
+  # e is not a number
+  carp 'e is not a number' and return undef if $e->is_nan;
+
+  return $self->{e} = $e;
 };
 
 
@@ -265,19 +258,15 @@ sub d {
   # Get value
   unless ($_[0]) {
     return $self->{d} // undef;
-  }
-
-  # Set value
-  else {
-    my $d = Math::BigInt->new( shift );
-
-    # d is not a number
-    carp 'd is not a number' and return undef if $d->is_nan;
-
-    return $self->{d} = $d;
   };
 
-  return undef;
+  # Set value
+  my $d = Math::BigInt->new( shift );
+
+  # d is not a number
+  carp 'd is not a number' and return undef if $d->is_nan;
+
+  return $self->{d} = $d;
 };
 
 
@@ -571,6 +560,8 @@ sub _b64url_to_hex {
   # Based on
   # https://github.com/sivy/Salmon/blob/master/lib/Salmon/
   #         MagicSignatures/SignatureAlgRsaSha256.pm
+
+  # Decode and convert b64url encoded hex number
   return Math::BigInt->new(
     '0x' . unpack( "H*", b64url_decode( shift ) )
   );
@@ -587,6 +578,8 @@ sub _hex_to_b64url {
 
   # Add leading zero padding
   $num = ( ( ( length $num ) % 2 ) > 0 ) ? '0' . $num : $num;
+
+  # Encode number using b64url
   return b64url_encode( pack( "H*", $num ) );
 };
 

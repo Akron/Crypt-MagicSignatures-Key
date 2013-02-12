@@ -1,5 +1,6 @@
-0.06 2013-02-10
+0.06 2013-02-12
         - PATCH: Math::BigInt versions on OpenBSD.
+	- Small code improvements.
           
 0.05 2013-02-07
 	- Small documentation improvements.
