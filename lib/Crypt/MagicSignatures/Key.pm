@@ -2,10 +2,12 @@ package Crypt::MagicSignatures::Key;
 use strict;
 use warnings;
 use bytes;
+use Carp qw/carp croak/;
 
 use v5.10.1;
 
-use Carp qw/carp croak/;
+our @CARP_NOT;
+
 use Digest::SHA qw/sha256 sha256_hex/;
 use MIME::Base64 qw(decode_base64 encode_base64);
 
