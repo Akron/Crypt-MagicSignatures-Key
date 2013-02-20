@@ -8,7 +8,7 @@ use v5.10.1;
 
 our @CARP_NOT;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 use Digest::SHA qw/sha256 sha256_hex/;
 use MIME::Base64 qw(decode_base64 encode_base64);
