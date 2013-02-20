@@ -1,4 +1,7 @@
-0.07 2013-02-14
+0.07 2013-02-20
+	- Corrected the dependency on Math::Prime::Util
+  	  to support irand.
+	- Recommend Math::Util::Prime::GMP for speed.
         - Small code improvements.
 
 0.06 2013-02-14

@@ -9,7 +9,7 @@ WriteMakefile(
     NAME         => 'Crypt::MagicSignatures::Key',
     AUTHOR       => 'Nils Diewald',
     PREREQ_PM => {
-      'Math::Prime::Util' => '0.10',
+      'Math::Prime::Util' => '0.17',
       'Math::Random::Secure' => '0.05',
       'Carp' => 0,
       'Digest::SHA' => 0,

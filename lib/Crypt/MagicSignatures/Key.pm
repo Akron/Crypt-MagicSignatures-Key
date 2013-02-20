@@ -133,7 +133,9 @@ sub new {
       my $size = $param{size} || MIN_BITS;
 
       # Key size is too short or impractical
-      return undef if $size < MIN_BITS || $size > MAX_BITS || $size % 2;
+      if ($size < MIN_BITS || $size > MAX_BITS || $size % 2) {
+	carp "Key size $size is invalid" and return;
+      };
 
       # Public exponent
       my $e = $param{e};
@@ -602,6 +604,7 @@ __END__
 
 Crypt::MagicSignatures::Key - MagicKeys for the Salmon Protocol
 
+
 =head1 SYNOPSIS
 
   use Crypt::MagicSignatures::Key;
@@ -767,13 +770,15 @@ The function can be exported.
 =head1 DEPENDENCIES
 
 For signing and verification there are no dependencies
-other than Perl 5.10 and core modules.
+other than Perl 5.10.1 and core modules.
 For key generation L<Math::Prime::Util> and
 L<Math::Random::Secure> are necessary.
 
 Either L<Math::BigInt::GMP> (preferred) or L<Math::BigInt::Pari>
-are strongly recommended for speed,
-as well as L<Math::Random::ISAAC::XS>.
+are strongly recommended for speed improvement
+(signing and verification) as well as
+L<Math::Prime::Util::GMP> and L<Math::Random::ISAAC::XS>
+(key generation).
 
 
 =head1 KNOWN BUGS AND LIMITATIONS
