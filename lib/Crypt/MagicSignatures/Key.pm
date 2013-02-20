@@ -8,6 +8,8 @@ use v5.10.1;
 
 our @CARP_NOT;
 
+our $VERSION = '0.07';
+
 use Digest::SHA qw/sha256 sha256_hex/;
 use MIME::Base64 qw(decode_base64 encode_base64);
 
@@ -18,22 +20,25 @@ use Math::BigInt try => 'GMP,Pari';
 use Exporter 'import';
 our @EXPORT_OK = qw(b64url_encode b64url_decode);
 
-our $VERSION = '0.06';
-our $GENERATOR;
+# Define constants
+use constant {
 
-# Maximum number of tests for random prime generation
-use constant MAX_ROUNDS => 100;
+  # Maximum number of tests for random prime generation
+  MAX_ROUNDS => 100,
 
-# Range of valid key sizes
-use constant MIN_BITS => 512;
-use constant MAX_BITS => 2048;
+  # Range of valid key sizes
+  MIN_BITS   => 512,
+  MAX_BITS   => 2048,
 
-# Maximum number length for i2osp and os2ip
-use constant NUM_LENGTH => 30_000;
+  # Maximum number length for i2osp and os2ip
+  NUM_LENGTH => 30_000
+};
 
 # Primitives for Math::Prime::Util
 sub random_nbit_prime;
 sub prime_set_config;
+
+our $GENERATOR;
 
 # Load Math::Prime::Util and Math::Random::Secure
 BEGIN {
@@ -565,7 +570,7 @@ sub _b64url_to_hex {
 
   # Decode and convert b64url encoded hex number
   return Math::BigInt->new(
-    '0x' . unpack( "H*", b64url_decode( shift ) )
+    '0x' . unpack( 'H*', b64url_decode( shift ) )
   );
 };
 
@@ -582,7 +587,7 @@ sub _hex_to_b64url {
   $num = ( ( ( length $num ) % 2 ) > 0 ) ? '0' . $num : $num;
 
   # Encode number using b64url
-  return b64url_encode( pack( "H*", $num ) );
+  return b64url_encode( pack( 'H*', $num ) );
 };
 
 
