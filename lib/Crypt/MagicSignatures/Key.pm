@@ -36,20 +36,13 @@ use constant {
 
 # Primitives for Math::Prime::Util
 sub random_nbit_prime;
-sub prime_set_config;
 
 our $GENERATOR;
 
 # Load Math::Prime::Util and Math::Random::Secure
 BEGIN {
-  if (eval
-	q{use Math::Prime::Util qw/prime_set_config random_nbit_prime/;
-	  use Math::Random::Secure;
-	  1;}) {
+  if (eval q{use Math::Prime::Util qw/random_nbit_prime/; 1;}) {
     our $GENERATOR = 1;
-
-    # Configure random prime number search
-    prime_set_config(irand => \&Math::Random::Secure::irand);
   };
 };
 
@@ -125,8 +118,7 @@ sub new {
 
       # Generator not installed
       unless ($GENERATOR) {
-	carp 'No Math::Prime::Util or Math::Random::Secure installed';
-	return;
+	carp 'No Math::Prime::Util installed' and return;
       };
 
       # Define key size
@@ -155,6 +147,7 @@ sub new {
       while ($m > 0) {
 
 	# Fetch random primes p and q
+	# Uses Bytes::Random::Secure by default
 	$p = random_nbit_prime($psize);
 	$q = random_nbit_prime($psize);
 
@@ -693,7 +686,7 @@ L<compact notation|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-
 or by attributes.
 
 If no C<n> attribute is given and L<Math::Prime::Util>
-and L<Math::Random::Secure> are installed, a new key will be generated.
+is installed, a new key will be generated.
 In case no C<size> attribute is given, the default key size
 for generation is 512 bits, which is also the minimum size.
 The maximum size is 2048 bits.
@@ -771,8 +764,7 @@ The function can be exported.
 
 For signing and verification there are no dependencies
 other than Perl 5.10.1 and core modules.
-For key generation L<Math::Prime::Util> and
-L<Math::Random::Secure> are necessary.
+For key generation L<Math::Prime::Util> is necessary.
 
 Either L<Math::BigInt::GMP> (preferred) or L<Math::BigInt::Pari>
 are strongly recommended for speed improvement
@@ -791,6 +783,7 @@ compatible with other implementations!
 
 L<Crypt::MagicSignatures::Envelope>,
 L<Crypt::RSA::DataFormat>,
+L<Alt::Crypt::RSA::BigInt> (which wasn't available when I started this module),
 L<https://github.com/sivy/Salmon>.
 
 
