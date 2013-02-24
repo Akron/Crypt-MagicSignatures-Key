@@ -19,9 +19,7 @@ sub _b {
 
 SKIP: {
   skip 'No key generation available', 21 unless
-    eval q{use Math::Prime::Util qw/prime_set_config random_nbit_prime/;
-	   use Math::Random::Secure;
-	   1;};
+    eval q{use Math::Prime::Util qw/random_nbit_prime/; 1;};
 
   local $SIG{__WARN__} = sub {};
 
