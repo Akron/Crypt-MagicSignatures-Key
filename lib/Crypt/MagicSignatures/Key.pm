@@ -1,8 +1,7 @@
 package Crypt::MagicSignatures::Key;
 use strict;
 use warnings;
-use bytes;
-use Carp qw/carp croak/;
+use Carp 'carp';
 
 use v5.10.1;
 
