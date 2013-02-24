@@ -3,6 +3,7 @@
 	  as Math::Prime::Util now uses (and needs)
 	  Bytes::Random::Secure by default.
 	- Small changes after perlcritic check.
+	- Some Changes regarding Makefile.
 
 0.07 2013-02-20
 	- Corrected the dependency on Math::Prime::Util
