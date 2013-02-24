@@ -93,7 +93,7 @@ L<compact notation|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-
 or by attributes.
 
 If no C<n> attribute is given and L<Math::Prime::Util>
-and L<Math::Random::Secure> are installed, a new key will be generated.
+is installed, a new key will be generated.
 In case no C<size> attribute is given, the default key size
 for generation is 512 bits, which is also the minimum size.
 The maximum size is 2048 bits.
@@ -171,8 +171,7 @@ The function can be exported.
 
 For signing and verification there are no dependencies
 other than Perl 5.10.1 and core modules.
-For key generation L<Math::Prime::Util> and
-L<Math::Random::Secure> are necessary.
+For key generation L<Math::Prime::Util> is necessary.
 
 Either L<Math::BigInt::GMP> (preferred) or L<Math::BigInt::Pari>
 are strongly recommended for speed improvement
@@ -191,6 +190,7 @@ compatible with other implementations!
 
 L<Crypt::MagicSignatures::Envelope>,
 L<Crypt::RSA::DataFormat>,
+L<Alt::Crypt::RSA::BigInt> (which wasn't available when I started this module),
 L<https://github.com/sivy/Salmon>.
 
 
