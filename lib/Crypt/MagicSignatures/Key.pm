@@ -614,7 +614,7 @@ Crypt::MagicSignatures::Key - MagicKeys for the Salmon Protocol
 L<Crypt::MagicSignatures::Key> implements MagicKeys as described in the
 L<MagicSignatures Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html>
 to sign messages of the L<Salmon Protocol|http://www.salmon-protocol.org/>.
-MagicSignatures is a I<"robust mechanism for digitally signing nearly arbitrary messages">.
+MagicSignatures is a "robust mechanism for digitally signing nearly arbitrary messages".
 See L<Crypt::MagicSignatures::Envelope> for using MagicKeys to sign MagicEnvelopes.
 
 B<This module is an early release! There may be significant changes in the future.>
@@ -781,7 +781,7 @@ compatible with other implementations!
 
 L<Crypt::MagicSignatures::Envelope>,
 L<Crypt::RSA::DataFormat>,
-L<Alt::Crypt::RSA::BigInt> (which wasn't available when I started this module),
+L<Alt::Crypt::RSA::BigInt>,
 L<https://github.com/sivy/Salmon>.
 
 
