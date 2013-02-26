@@ -170,8 +170,8 @@ The function can be exported.
 =head1 DEPENDENCIES
 
 For signing and verification there are no dependencies
-other than Perl 5.10.1 and core modules.
-For key generation L<Math::Prime::Util> is necessary.
+other than Perl v5.10.1 and core modules.
+For key generation L<Math::Prime::Util> v0.21 is necessary.
 
 Either L<Math::BigInt::GMP> (preferred) or L<Math::BigInt::Pari>
 are strongly recommended for speed improvement

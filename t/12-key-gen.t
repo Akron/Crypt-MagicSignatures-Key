@@ -19,7 +19,7 @@ sub _b {
 
 SKIP: {
   skip 'No key generation available', 21 unless
-    eval q{use Math::Prime::Util qw/random_nbit_prime/; 1;};
+    eval q{use Math::Prime::Util 0.21 qw/random_nbit_prime/; 1;};
 
   local $SIG{__WARN__} = sub {};
 
@@ -28,7 +28,7 @@ SKIP: {
   ok($key->e, 'Public Exponet');
   ok($key->d, 'Private Exponet');
 
-  # diag 'N: ' . $key->n;
+  # diag 'N: ' . $key->N;
   # diag 'E: ' . $key->e;
   # diag 'D: ' . $key->d;
 

@@ -1,9 +1,10 @@
-0.08 2013-02-24
+0.08 2013-02-26
         - Stripped Math::Random::Secure dependency,
 	  as Math::Prime::Util now uses (and needs)
 	  Bytes::Random::Secure by default.
 	- Small changes after perlcritic check.
 	- Some Changes regarding Makefile.
+	- Make sure the right version of M:P:U is used.
 
 0.07 2013-02-20
 	- Corrected the dependency on Math::Prime::Util
