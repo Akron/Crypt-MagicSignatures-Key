@@ -1,4 +1,4 @@
-0.08 2013-02-26
+0.08 2013-03-01
         - Stripped Math::Random::Secure dependency,
 	  as Math::Prime::Util now uses (and needs)
 	  Bytes::Random::Secure by default.
