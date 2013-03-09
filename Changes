@@ -1,3 +1,7 @@
+0.09 2013-03-09
+        - No more entirely experimental.
+	- Small doc improvement.
+
 0.08 2013-03-01
         - Stripped Math::Random::Secure dependency,
 	  as Math::Prime::Util now uses (and needs)

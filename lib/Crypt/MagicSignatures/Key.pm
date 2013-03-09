@@ -7,7 +7,7 @@ use v5.10.1;
 
 our @CARP_NOT;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 # Maximum number of tests for random prime generation = 100
 # Range of valid key sizes = 512 - 2048
@@ -617,8 +617,6 @@ to sign messages of the L<Salmon Protocol|http://www.salmon-protocol.org/>.
 MagicSignatures is a "robust mechanism for digitally signing nearly arbitrary messages".
 See L<Crypt::MagicSignatures::Envelope> for using MagicKeys to sign MagicEnvelopes.
 
-B<This module is an early release! There may be significant changes in the future.>
-
 
 =head1 ATTRIBUTES
 
@@ -765,7 +763,7 @@ other than Perl v5.10.1 and core modules.
 For key generation L<Math::Prime::Util> v0.21 is necessary.
 
 Either L<Math::BigInt::GMP> (preferred) or L<Math::BigInt::Pari>
-are strongly recommended for speed improvement
+is strongly recommended for speed improvement
 (signing and verification) as well as
 L<Math::Prime::Util::GMP> and L<Math::Random::ISAAC::XS>
 (key generation).
