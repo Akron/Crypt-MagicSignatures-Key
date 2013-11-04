@@ -7,7 +7,7 @@ use v5.10.1;
 
 our @CARP_NOT;
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 # Maximum number of tests for random prime generation = 100
 # Range of valid key sizes = 512 - 2048
