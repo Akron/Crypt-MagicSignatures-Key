@@ -7,7 +7,7 @@ use v5.10.1;
 
 our @CARP_NOT;
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 use overload '""' => sub { $_[0]->to_string }, fallback => 1;
 
@@ -756,8 +756,7 @@ Either L<Math::BigInt::GMP> (preferred) or L<Math::BigInt::Pari>
 is strongly recommended for speed improvement
 (signing and verification) as well as
 L<Math::Prime::Util::GMP> and L<Math::Random::ISAAC::XS>
-(key generation). You can install L<Crypt::MagicSignatures::Key::Fast>
-for these dependencies.
+(key generation).
 
 
 =head1 KNOWN BUGS AND LIMITATIONS

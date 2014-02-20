@@ -1,3 +1,6 @@
+0.12 2014-02-20
+        - Fix bug in documentation.
+
 0.11 2014-02-20
         - Small code improvements.
 	- Change object to array.
