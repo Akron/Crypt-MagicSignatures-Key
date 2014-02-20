@@ -7,7 +7,7 @@ use v5.10.1;
 
 our @CARP_NOT;
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 # Maximum number of tests for random prime generation = 100
 # Range of valid key sizes = 512 - 2048
@@ -30,7 +30,7 @@ our $GENERATOR;
 
 # Load Math::Prime::Util and Math::Random::Secure
 BEGIN {
-  if (eval "use Math::Prime::Util 0.21 qw/random_nbit_prime/; 1;") {
+  if (eval 'use Math::Prime::Util 0.21 qw/random_nbit_prime/; 1;') {
     our $GENERATOR = 1;
   };
 };
@@ -71,7 +71,7 @@ sub new {
     # RSA.modulus(n).exponent(e).private_exponent(d)?
     for ($mod, $exp, $private_exp) {
       next unless $_;
-      $_ = _b64url_to_hex($_);
+      $_ = _b64url_to_hex( $_ );
     };
 
     # Set modulus
@@ -95,7 +95,7 @@ sub new {
 
       # Set attributes
       foreach (qw/n e d/) {
-	$self->$_($param{$_}) if exists $param{$_};
+	$self->$_( $param{$_} ) if exists $param{$_};
       };
 
       # Modulus was not defined
@@ -228,7 +228,7 @@ sub n {
   delete $self->{emLen};
   delete $self->{size};
 
-  return $self->{n} = $n;
+  $self->{n} = $n;
 };
 
 
@@ -237,9 +237,7 @@ sub e {
   my $self = shift;
 
   # Get value
-  unless ($_[0]) {
-    return ($self->{e} //= Math::BigInt->new('65537'));
-  };
+  return ($self->{e} //= Math::BigInt->new('65537')) unless $_[0];
 
   # Set value
   my $e = Math::BigInt->new( shift );
@@ -247,7 +245,7 @@ sub e {
   # e is not a number
   carp 'e is not a number' and return if $e->is_nan;
 
-  return $self->{e} = $e;
+  $self->{e} = $e;
 };
 
 
@@ -256,9 +254,7 @@ sub d {
   my $self = shift;
 
   # Get value
-  unless ($_[0]) {
-    return $self->{d} // undef;
-  };
+  return ($self->{d} // undef) unless $_[0];
 
   # Set value
   my $d = Math::BigInt->new( shift );
@@ -266,15 +262,14 @@ sub d {
   # d is not a number
   carp 'd is not a number' and return if $d->is_nan;
 
-  return $self->{d} = $d;
+  $self->{d} = $d;
 };
 
 
 # Get key size
 sub size {
-  my $self = shift;
-  return unless $self->n;
-  return $self->{size} // ($self->{size} = _bitsize($self->n));
+  return unless $_[0]->n;
+  $_[0]->{size} // ($_[0]->{size} = _bitsize($_[0]->n));
 };
 
 
@@ -286,9 +281,9 @@ sub sign {
     carp 'You can only sign with a private key' and return;
   };
 
-  my $encoded_message = _sign_emsa_pkcs1_v1_5($self, $message);
-
-  return b64url_encode($encoded_message);
+  b64url_encode(
+    _sign_emsa_pkcs1_v1_5($self, $message)
+  );
 };
 
 
@@ -308,7 +303,7 @@ sub verify {
 
   return unless $self->n;
 
-  return _verify_emsa_pkcs1_v1_5(
+  _verify_emsa_pkcs1_v1_5(
     $self,
     $message,
     # _b64url_to_hex( $encoded_message )
@@ -333,11 +328,8 @@ sub to_string {
 
   push(@array, _hex_to_b64url($self->d)) if $_[0] && $self->d;
 
-  my $mkey = join('.', @array);
-
   # Specification is not clear about $mkey =~ s/=+//g;
-
-  $mkey;
+  join('.', @array);
 };
 
 
@@ -353,8 +345,7 @@ sub b64url_encode {
 
   # Trim padding or not
   $v =~ s/\=+$// unless (defined $_[1] ? $_[1] : 1);
-
-  return $v;
+  $v;
 };
 
 
@@ -372,15 +363,14 @@ sub b64url_decode {
     $v .= chr(61) x (4 - $padding);
   };
 
-  return decode_base64($v);
+  decode_base64($v);
 };
 
 
 # Get octet length of n
 sub _emLen {
-  my $self = shift;
-  return 0 unless $self->n;
-  return $self->{emLen} // ($self->{emLen} = _octet_len( $self->n ));
+  return 0 unless $_[0]->n;
+  ($_[0]->{emLen} // ($_[0]->{emLen} = _octet_len( $_[0]->n )));
 };
 
 
@@ -397,9 +387,7 @@ sub _sign_emsa_pkcs1_v1_5 {
   # encode message (Hash digest is always 'sha-256')
   my $EM = _emsa_encode($M, $k) or return;
 
-  my $m = _os2ip($EM);
-  my $s = _rsasp1($K, $m);
-  _i2osp($s, $k); # S
+  _i2osp(_rsasp1($K, _os2ip($EM)), $k);
 };
 
 
@@ -484,13 +472,12 @@ sub _emsa_encode {
 sub _os2ip {
   # Based on Crypt::RSA::DataFormat
   # See also Convert::ASN1
-
   my $os = shift;
 
-  my $l = length($os);
+  my $l = length $os;
   return if $l > 30_000;
 
-  my $base = Math::BigInt->new(256);
+  state $base = Math::BigInt->new(256);
   my $result = Math::BigInt->bzero;
   for (0 .. $l - 1) {
     # Maybe optimizable
@@ -509,11 +496,10 @@ sub _i2osp {
 
   my $num = Math::BigInt->new(shift);
 
-  return if $num->is_nan;
-  return if $num->length > 30_000;
+  return if $num->is_nan || $num->length > 30_000;
 
   my $l = shift || 0;
-  my $base = Math::BigInt->new(256);
+  state $base = Math::BigInt->new(256);
 
   my $result = '';
 
@@ -562,7 +548,7 @@ sub _b64url_to_hex {
   #         MagicSignatures/SignatureAlgRsaSha256.pm
 
   # Decode and convert b64url encoded hex number
-  return Math::BigInt->new(
+  Math::BigInt->new(
     '0x' . unpack( 'H*', b64url_decode( shift ) )
   );
 };
@@ -580,7 +566,7 @@ sub _hex_to_b64url {
   $num = ( ( ( length $num ) % 2 ) > 0 ) ? '0' . $num : $num;
 
   # Encode number using b64url
-  return b64url_encode( pack( 'H*', $num ) );
+  b64url_encode( pack( 'H*', $num ) );
 };
 
 
@@ -766,7 +752,8 @@ Either L<Math::BigInt::GMP> (preferred) or L<Math::BigInt::Pari>
 is strongly recommended for speed improvement
 (signing and verification) as well as
 L<Math::Prime::Util::GMP> and L<Math::Random::ISAAC::XS>
-(key generation).
+(key generation). You can install L<Crypt::MagicSignatures::Key::Fast>
+for these dependencies.
 
 
 =head1 KNOWN BUGS AND LIMITATIONS

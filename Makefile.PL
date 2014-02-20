@@ -29,7 +29,7 @@ WriteMakefile(
     },
     recommends => {
       'Math::Prime::Util::GMP'  => 0.06,
-      'Math::BigInt::GMP'       => 0,
+      'Math::BigInt::GMP'       => 1.37,
       'Math::Random::ISAAC::XS' => 1.004,
     }
   },
