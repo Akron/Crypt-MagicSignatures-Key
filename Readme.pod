@@ -94,7 +94,7 @@ If no C<n> attribute is given and L<Math::Prime::Util>
 is installed, a new key will be generated.
 In case no C<size> attribute is given, the default key size
 for generation is 512 bits, which is also the minimum size.
-The maximum size is 2048 bits.
+The maximum size is 4096 bits.
 
 
 =head2 sign
@@ -200,7 +200,7 @@ L<https://github.com/sivy/Salmon>.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2012-2013, L<Nils Diewald|http://nils-diewald.de/>.
+Copyright (C) 2012-2014, L<Nils Diewald|http://nils-diewald.de/>.
 
 This program is free software, you can redistribute it
 and/or modify it under the same terms as Perl.
