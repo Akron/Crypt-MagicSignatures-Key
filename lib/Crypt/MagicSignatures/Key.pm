@@ -7,12 +7,12 @@ use v5.10.1;
 
 our @CARP_NOT;
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 use overload '""' => sub { $_[0]->to_string }, fallback => 1;
 
 # Maximum number of tests for random prime generation = 100
-# Range of valid key sizes = 512 - 2048
+# Range of valid key sizes = 512 - 4096
 # Maximum number length for i2osp and os2ip = 30000
 
 # This implementation uses a blessed array for speed.
@@ -28,7 +28,7 @@ use Math::BigInt try => 'GMP,Pari';
 use Exporter 'import';
 our @EXPORT_OK = qw(b64url_encode b64url_decode);
 
-# Primitives for Math::Prime::Util
+# Primitive for Math::Prime::Util
 sub random_nbit_prime;
 
 our $GENERATOR;
@@ -783,6 +783,6 @@ L<https://github.com/sivy/Salmon>.
 Copyright (C) 2012-2014, L<Nils Diewald|http://nils-diewald.de/>.
 
 This program is free software, you can redistribute it
-and/or modify it under the same terms as Perl.
+and/or modify it under the terms of the Artistic License version 2.0.
 
 =cut

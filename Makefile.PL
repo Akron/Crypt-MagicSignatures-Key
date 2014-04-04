@@ -20,7 +20,7 @@ WriteMakefile(
     'Math::BigInt' => 0,
     'Exporter'     => 0,
   },
-  LICENSE => 'perl',
+  LICENSE => 'artistic_2',
   META_MERGE   => {
     requires  => { perl => '5.010001' },
     resources => {
