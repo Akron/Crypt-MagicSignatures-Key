@@ -7,7 +7,7 @@ use v5.10.1;
 
 our @CARP_NOT;
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 
 use overload '""' => sub { $_[0]->to_string }, fallback => 1;
 
@@ -90,7 +90,7 @@ sub new {
   }
 
   # MagicKey defined by parameters
-  else {
+  elsif (@_ % 2 == 0) {
     my %param = @_;
 
     # RSA complete description
@@ -197,6 +197,12 @@ sub new {
       # Store n
       $self->n($n);
     };
+  }
+
+  # Invalid request
+  else {
+    carp 'Invalid parameters for MagicKey construction';
+    return;
   };
 
   # Set size (bitsize length of modulus)
@@ -780,7 +786,7 @@ L<https://github.com/sivy/Salmon>.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2012-2014, L<Nils Diewald|http://nils-diewald.de/>.
+Copyright (C) 2012-2015, L<Nils Diewald|http://nils-diewald.de/>.
 
 This program is free software, you can redistribute it
 and/or modify it under the terms of the Artistic License version 2.0.

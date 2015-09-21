@@ -1,3 +1,6 @@
+0.14 2015-09-21
+        - Warn on invalid construction parameters.
+
 0.13 2014-04-04
         - Coherent Artistic License 2.0.
 
