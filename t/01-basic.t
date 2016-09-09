@@ -55,8 +55,8 @@ is($b64url2hex, $os2ip, '_b64url_to_hex');
 
 # Todo: check extreme values for d, e, n, sign, verify
 
-# done_testing;
-# exit;
+done_testing;
+exit;
 
 # MaxMin tests #
 ################

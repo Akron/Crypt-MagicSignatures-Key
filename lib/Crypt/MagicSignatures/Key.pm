@@ -5,9 +5,8 @@ use Carp 'carp';
 
 use v5.10.1;
 
-our @CARP_NOT;
-
-our $VERSION = '0.14';
+our @CARP_
+our $VERSION = '0.15';
 
 use overload '""' => sub { $_[0]->to_string }, fallback => 1;
 
@@ -100,7 +99,7 @@ sub new {
 
       # Set attributes
       foreach (qw/n e d/) {
-	$self->$_( $param{$_} ) if exists $param{$_};
+        $self->$_( $param{$_} ) if exists $param{$_};
       };
 
       # Modulus was not defined
@@ -112,7 +111,7 @@ sub new {
 
       # Generator not installed
       unless ($GENERATOR) {
-	carp 'No Math::Prime::Util installed' and return;
+        carp 'No Math::Prime::Util installed' and return;
       };
 
       # Define key size
@@ -121,15 +120,15 @@ sub new {
       # Size is given
       if ($size) {
 
-	# Key size is too short or impractical
-	if ($size < 512 || $size > 4096 || $size % 2) {
-	  carp "Key size $size is invalid" and return;
-	};
+        # Key size is too short or impractical
+        if ($size < 512 || $size > 4096 || $size % 2) {
+          carp "Key size $size is invalid" and return;
+        };
       }
 
       # Default size
       else {
-	$size = 512;
+        $size = 512;
       };
 
       # Public exponent
@@ -149,31 +148,31 @@ sub new {
       # Run as long as allowed
       while ($m > 0) {
 
-	# Fetch random primes p and q
-	# Uses Bytes::Random::Secure by default
-	$p = random_nbit_prime($psize);
-	$q = random_nbit_prime($psize);
+        # Fetch random primes p and q
+        # Uses Bytes::Random::Secure by default
+        $p = random_nbit_prime($psize);
+        $q = random_nbit_prime($psize);
 
-	# Fetch a new prime if both are equal
-	while ($p == $q) {
-	  $q = random_nbit_prime($psize);
-	  unless (--$m > 0) {
-	    $p = $q = Math::BigInt->bzero;
-	    last;
-	  };
-	};
+        # Fetch a new prime if both are equal
+        while ($p == $q) {
+          $q = random_nbit_prime($psize);
+          unless (--$m > 0) {
+            $p = $q = Math::BigInt->bzero;
+            last;
+          };
+        };
 
-	# Calculate modulus
-	$n = $p * $q;
+        # Calculate modulus
+        $n = $p * $q;
 
-	# Bitsize is correct based on given size
-	last if _bitsize($n) == $size;
+        # Bitsize is correct based on given size
+        last if _bitsize($n) == $size;
 
-	$m--;
+        $m--;
       };
 
       unless ($m > 0) {
-	carp 'Maximum rounds for key generation is reached' and return;
+        carp 'Maximum rounds for key generation is reached' and return;
       };
 
       # Bless object
@@ -537,8 +536,8 @@ sub _i2osp {
 sub _octet_len {
   return Math::BigInt->new( _bitsize( shift ))
     ->badd(7)
-      ->bdiv(8)
-	->bfloor;
+    ->bdiv(8)
+    ->bfloor;
 };
 
 
@@ -786,7 +785,7 @@ L<https://github.com/sivy/Salmon>.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2012-2015, L<Nils Diewald|http://nils-diewald.de/>.
+Copyright (C) 2012-2016, L<Nils Diewald|http://nils-diewald.de/>.
 
 This program is free software, you can redistribute it
 and/or modify it under the terms of the Artistic License version 2.0.

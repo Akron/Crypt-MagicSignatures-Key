@@ -13,7 +13,7 @@ WriteMakefile(
     'Test::More' => 0
   },
   PREREQ_PM => {
-    'Math::Prime::Util' => '0.21',
+    'Math::Prime::Util' => '0.21', # 0.58
     'Carp'         => 0,
     'Digest::SHA'  => 0,
     'MIME::Base64' => 0,
@@ -28,8 +28,8 @@ WriteMakefile(
       repository  => 'https://github.com/Akron/Crypt-MagicSignatures-Key'
     },
     recommends => {
-      'Math::Prime::Util::GMP'  => 0.06,
-      'Math::BigInt::GMP'       => 1.37,
+      'Math::Prime::Util::GMP'  => 0.34,
+      'Math::BigInt::GMP'       => 1.44, # 1.51
       'Math::Random::ISAAC::XS' => 1.004,
     }
   },
