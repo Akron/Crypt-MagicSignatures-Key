@@ -1,5 +1,6 @@
-0.15 2016-09-09
+0.15 2016-09-14
         - Updated for Kwalitee tests.
+        - Added Kwalitee test for release testing.
 
 0.14 2015-09-21
         - Warn on invalid construction parameters.

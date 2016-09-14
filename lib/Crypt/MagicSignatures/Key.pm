@@ -5,7 +5,7 @@ use Carp 'carp';
 
 use v5.10.1;
 
-our @CARP_
+our @CARP_NOT;
 our $VERSION = '0.15';
 
 use overload '""' => sub { $_[0]->to_string }, fallback => 1;
