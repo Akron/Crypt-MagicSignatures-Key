@@ -11,6 +11,7 @@ t/09-rsavs.t
 t/10-sign-verify.t
 t/11-node-ostatus.t
 t/12-key-gen.t
+t/14-object.t
 Readme.pod
 Changes
 MANIFEST

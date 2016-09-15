@@ -1,6 +1,7 @@
 package Crypt::MagicSignatures::Key;
 use strict;
 use warnings;
+use Scalar::Util qw/blessed/;
 use Carp 'carp';
 
 use v5.10.1;
@@ -10,12 +11,19 @@ our $VERSION = '0.15';
 
 use overload '""' => sub { $_[0]->to_string }, fallback => 1;
 
+our $DEFAULT_KEY_SIZE = 512;
+
 # Maximum number of tests for random prime generation = 100
 # Range of valid key sizes = 512 - 4096
 # Maximum number length for i2osp and os2ip = 30000
 
 # This implementation uses a blessed array for speed.
 # The array order is [n, e, d, size, emLen].
+
+# TODO: Check extreme values for d, e, n, sign, verify
+# TODO: Improve tests for _bitsize, b64url_encode, b64url_decode,
+#       hex2b64url, b64url2hex
+
 
 use Digest::SHA qw/sha256 sha256_hex/;
 use MIME::Base64 qw(decode_base64 encode_base64);
@@ -45,14 +53,28 @@ sub new {
   my $class = shift;
   my $self;
 
-  # Is already a MagicKey object
-  return $_[0] if ref $_[0] && ref $_[0] eq __PACKAGE__;
+  # Message to pass to carp on parameter failure
+  state $INVALID_MSG = 'Invalid parameters for MagicKey construction';
+
+  # Check if the passed argument is an object
+  if (my $bl = blessed($_[0])) {
+
+    # It's already a MagicKey object - fine!
+    return $_[0] if $bl eq __PACKAGE__;
+  }
+
+  # Do not support references
+  if (ref $_[0]) {
+
+    # Passed object or reference is invalid
+    carp $INVALID_MSG;
+    return;
+  };
 
   # MagicKey in string notation
-  if (@_ == 1 && index($_[0], 'RSA') >= 0) {
+  if (@_ == 1 && index($_[0], 'RSA.') >= 0) {
 
     my $string = shift;
-    return unless $string;
 
     # New object from parent class
     $self = bless [], $class;
@@ -66,23 +88,22 @@ sub new {
     # Split MagicKey
     my ($type, $mod, $exp, $private_exp) = split(/\./, $string);
 
-    # The key is incorrect
-    if ($type ne 'RSA') {
-      carp "MagicKey type '$type' is not supported";
+    # RSA.modulus(n).exponent(e).private_exponent(d)?
+
+    # MagicKey modulus is missing or invalid
+    unless ($mod = _b64url_to_hex( $mod )) {
+      carp $INVALID_MSG;
       return;
     };
 
-    # RSA.modulus(n).exponent(e).private_exponent(d)?
-    for ($mod, $exp, $private_exp) {
-      next unless $_;
-      $_ = _b64url_to_hex( $_ );
-    };
+    $exp = _b64url_to_hex( $exp ) if $exp;
+    $private_exp = _b64url_to_hex( $private_exp ) if $private_exp;
 
     # Set modulus
     $self->n( $mod );
 
     # Set exponent
-    $self->e( $exp );
+    $self->e( $exp ) if $exp;
 
     # Set private key
     $self->d( $private_exp ) if $private_exp;
@@ -103,113 +124,34 @@ sub new {
       };
 
       # Modulus was not defined
-      carp 'Key is not well defined' and return unless $self->n;
+      unless ($self->n) {
+        carp $INVALID_MSG;
+        return;
+      };
     }
 
     # Generate new key
     else {
 
-      # Generator not installed
-      unless ($GENERATOR) {
-        carp 'No Math::Prime::Util installed' and return;
-      };
-
-      # Define key size
-      my $size = $param{size};
-
-      # Size is given
-      if ($size) {
-
-        # Key size is too short or impractical
-        if ($size < 512 || $size > 4096 || $size % 2) {
-          carp "Key size $size is invalid" and return;
-        };
-      }
-
-      # Default size
-      else {
-        $size = 512;
-      };
-
-      # Public exponent
-      my $e = $param{e};
-
-      # Partial size
-      my $psize = int( $size / 2 );
-
-      my $n;
-      my $m = 100; # Maximum number of rounds
-
-      my ($p, $q);
-
-      # Start calculation of combining primes
-    CALC_KEY:
-
-      # Run as long as allowed
-      while ($m > 0) {
-
-        # Fetch random primes p and q
-        # Uses Bytes::Random::Secure by default
-        $p = random_nbit_prime($psize);
-        $q = random_nbit_prime($psize);
-
-        # Fetch a new prime if both are equal
-        while ($p == $q) {
-          $q = random_nbit_prime($psize);
-          unless (--$m > 0) {
-            $p = $q = Math::BigInt->bzero;
-            last;
-          };
-        };
-
-        # Calculate modulus
-        $n = $p * $q;
-
-        # Bitsize is correct based on given size
-        last if _bitsize($n) == $size;
-
-        $m--;
-      };
-
-      unless ($m > 0) {
-        carp 'Maximum rounds for key generation is reached' and return;
-      };
-
-      # Bless object
-      $self = bless [], $class;
-
-      # Set e
-      $self->e($e) if $e;
-
-      # Calculate phi
-      my $phi = ($p - 1) * ($q - 1);
-
-      # Calculate multiplicative inverse of e modulo phi
-      my $d = $self->e->copy->bmodinv($phi);
-
-      # $d is too short
-      goto CALC_KEY if _bitsize($d) < $size / 4;
-
-      # Store d
-      $self->d($d);
-
-      # Store n
-      $self->n($n);
+      carp 'Key generation in new() is DEPRECATED '
+        . 'in favor of generate()';
+      return $class->generate(@_);
     };
   }
 
   # Invalid request
   else {
-    carp 'Invalid parameters for MagicKey construction';
+    carp $INVALID_MSG;
     return;
   };
 
-  # Set size (bitsize length of modulus)
-  my $size = $self->size(_bitsize( $self->n ));
+  # Get size (bitsize length of modulus)
+  my $size = $self->size;
 
   # Size is to small
   if ($size < 512 || $size > 4096)  {
-    carp 'Keysize is out of range' and return;
+    carp 'Keysize is out of range';
+    return;
   };
 
   # Set emLen (octet length of modulus)
@@ -219,20 +161,125 @@ sub new {
 };
 
 
+# Generate a new MagicKey
+sub generate {
+
+  # Generator not installed
+  unless ($GENERATOR) {
+    carp 'No Math::Prime::Util installed';
+    return;
+  };
+
+  # Check for passing of 
+  my ($class, %param) = @_;
+
+  # Define key size
+  my $size = $param{size};
+
+  # Size is given
+  if ($size) {
+
+    # Key size is too short or impractical
+    if ($size < 512 || $size > 4096 || $size % 2) {
+      carp "Key size $size is invalid";
+      return;
+    };
+  }
+
+  # Default size
+  else {
+    $size = $DEFAULT_KEY_SIZE;
+  };
+
+  # Public exponent
+  my $e = $param{e};
+
+  # Partial size
+  my $psize = int( $size / 2 );
+
+  my $n;
+  my $m = 100; # Maximum number of rounds
+
+  my ($p, $q);
+
+  # Start calculation of combining primes
+ CALC_KEY:
+
+  # Run as long as allowed
+  while ($m > 0) {
+
+    # Fetch random primes p and q
+    # Uses Bytes::Random::Secure by default
+    $p = random_nbit_prime($psize);
+    $q = random_nbit_prime($psize);
+
+    # Fetch a new prime if both are equal
+    while ($p == $q) {
+      $q = random_nbit_prime($psize);
+      unless (--$m > 0) {
+        $p = $q = Math::BigInt->bzero;
+        last;
+      };
+    };
+
+    # Calculate modulus
+    $n = $p * $q;
+
+    # Bitsize is correct based on given size
+    last if _bitsize($n) == $size;
+
+    $m--;
+  };
+
+  unless ($m > 0) {
+    carp 'Maximum rounds for key generation is reached';
+    return;
+  };
+
+  # Bless object
+  my $self = bless [], $class;
+
+  # Set e
+  $self->e($e) if $e;
+
+  # Calculate phi
+  my $phi = ($p - 1) * ($q - 1);
+
+  # Calculate multiplicative inverse of e modulo phi
+  my $d = $self->e->copy->bmodinv($phi);
+
+  # $d is too short
+  goto CALC_KEY if _bitsize($d) < $size / 4;
+
+  # Store d
+  $self->d($d);
+
+  # Store n
+  $self->n($n);
+
+  # Set emLen (octet length of modulus)
+  $self->_emLen( _octet_len( $self->n ) );
+
+  return $self;
+};
+
+
+
 # Get or set modulus
 sub n {
   my $self = shift;
 
   # Get value
-  unless ($_[0]) {
-    return ($self->[0] //= Math::BigInt->bzero);
-  };
+  return $self->[0] unless $_[0];
 
   # Set value
   my $n = Math::BigInt->new( shift );
 
   # n is not a number
-  carp 'n is not a number' and return if $n->is_nan;
+  if ($n->is_nan) {
+    carp 'n is not a number';
+    return;
+  };
 
   # Delete precalculated emLen and size
   $#{$self} = 2;
@@ -252,7 +299,10 @@ sub e {
   my $e = Math::BigInt->new( shift );
 
   # e is not a number
-  carp 'e is not a number' and return if $e->is_nan;
+  if ($e->is_nan) {
+    carp 'e is not a number';
+    return;
+  };
 
   $self->[1] = $e;
 };
@@ -269,7 +319,10 @@ sub d {
   my $d = Math::BigInt->new( shift );
 
   # d is not a number
-  carp 'd is not a number' and return if $d->is_nan;
+  if ($d->is_nan) {
+    carp 'd is not a number';
+    return;
+  };
 
   $self->[2] = $d;
 };
@@ -277,7 +330,7 @@ sub d {
 
 # Get key size
 sub size {
-  return unless $_[0]->n;
+  # return unless $_[0]->n;
   $_[0]->[3] // ($_[0]->[3] = _bitsize($_[0]->n));
 };
 
@@ -287,7 +340,8 @@ sub sign {
   my ($self, $message) = @_;
 
   unless ($self->d) {
-    carp 'You can only sign with a private key' and return;
+    carp 'Unable to sign without a private key';
+    return;
   };
 
   b64url_encode(
@@ -411,7 +465,10 @@ sub _verify_emsa_pkcs1_v1_5 {
 
   # The length of the signature is not
   # equivalent to the length of the RSA modulus
-  carp 'Invalid signature' and return if length($S) != $k;
+  if (length($S) != $k) {
+    carp 'Invalid signature';
+    return;
+  };
 
   my $s = _os2ip($S);
   my $m = _rsavp1($K, $s) or return;
@@ -429,7 +486,8 @@ sub _rsasp1 {
   my ($K, $m) = @_;
 
   if ($m >= $K->n) {
-    carp 'Message representative out of range' and return;
+    carp 'Message representative out of range';
+    return;
   };
 
   return $m->bmodpow($K->d, $K->n);
@@ -445,7 +503,8 @@ sub _rsavp1 {
 
   # Is signature in range?
   if ($s > $K->n || $s < 0) {
-    carp 'Signature representative out of range' and return;
+    carp 'Signature representative out of range';
+    return;
   };
 
   return $s->bmodpow($K->e, $K->n);
@@ -470,7 +529,8 @@ sub _emsa_encode {
   my $tLen = length( $T );
 
   if ($emLen < $tLen + 11) {
-    carp 'Intended encoded message length too short' and return;
+    carp 'Intended encoded message length too short';
+    return;
   };
 
   return "\x00\x01" . ("\xFF" x ($emLen - $tLen - 3)) . "\x00" . $T;
@@ -513,7 +573,8 @@ sub _i2osp {
   my $result = '';
 
   if ($l && $num > ( $base ** $l )) {
-    carp 'i2osp error - Integer is to short' and return;
+    carp 'i2osp error - Integer is to short';
+    return;
   };
 
   do {
@@ -669,15 +730,19 @@ The MagicKey keysize in bits.
     e => 3
   );
 
-  $mkey = Crypt::MagicSignatures::Key->new(size => 1024);
-
 
 The Constructor accepts MagicKeys in
 L<compact notation|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html#anchor13>
 or by attributes.
 
-If no C<n> attribute is given and L<Math::Prime::Util>
-is installed, a new key will be generated.
+
+=head2 generate
+
+  my $mkey = Crypt::MagicSignatures::Key->new(size => 1024);
+
+Generate a new key. Requires L<Math::Prime::Util> to be installed.
+
+Accepts the attributes C<size> and C<e>.
 In case no C<size> attribute is given, the default key size
 for generation is 512 bits, which is also the minimum size.
 The maximum size is 4096 bits.
@@ -748,6 +813,7 @@ The function can be exported.
   print b64url_decode('VGhpcyBpcyBhIG1lc3NhZ2U=');
 
 Decodes a base-64 string with URL safe characters.
+Characters not part of the character set are silently ignored.
 The function can be exported.
 
 

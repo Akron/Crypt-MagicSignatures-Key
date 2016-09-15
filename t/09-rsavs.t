@@ -26,17 +26,38 @@ my $test_msg = 'This is a small message test.';
 
 
 my $mod = 1024;
-my ($e, $m, $s);
+my ($e, $m, $s, $n);
 
-my $n = Math::BigInt->new(
+$n = Math::BigInt->new(
   '0x9ec4d483330916b69eee4e9b7614eafc4fbf60e74b5127a3ff5bd9d48c7ecf8418d94d1e60388b' .
     'b68546f8bc92deb1974b9def6748fbb4ec93029ea8b7bea36f61c5c6aeedfd512a0f765846fad5' .
       'edacb08c3d75cf1d43b48b394c94323c3f3e9ba6612f93fe2900134217433afb088b5ca33fc4e6' .
 	'b270194df077d2b6592743');
 
+#$n = '9ec4d483330916b69eee4e9b7614eafc4fbf60e74b5127a3ff5bd9d48c7ecf8418d94d1e60388b' .
+#  'b68546f8bc92deb1974b9def6748fbb4ec93029ea8b7bea36f61c5c6aeedfd512a0f765846fad5' .
+#  'edacb08c3d75cf1d43b48b394c94323c3f3e9ba6612f93fe2900134217433afb088b5ca33fc4e6' .
+#  'b270194df077d2b6592743';
+
 # Exponent
-# $e = Math::BigInt->from_hex('0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003');
+#$e = Math::BigInt->from_hex('0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003');
+# Equal to $e = 3;
 $e = 3;
+
+my $mkey = Crypt::MagicSignatures::Key->new(n => $n, e => $e);
+
+# Key length matches modulus
+is(*{"${module}::_bitsize"}->($mkey->n), $mod, 'Key length');
+is(*{"${module}::_octet_len"}->($mkey->n), ($mod / 8), 'Key length');
+is($mkey->size, 1024, 'Correct Key size');
+
+done_testing;
+
+__END__
+
+diag 'The tests do not use emsa padding and won\'t validate';
+
+
 
 # Message
 $m = '7c5177b2ef9ecc43c6b2048397d70f2b7dc98feabec59815aee4b49bd0a72b373fd381e94c7f3f' .
@@ -50,27 +71,8 @@ $s = '01da3b0936cc9e6261e80595e46ea228c93cb7f348b2cace6a5a2704eba204b96d5cb9e29c
   '178ae0166151470f628831afa59203b6a233f133544d51669eb2e5de159ed3819ef0cc50474471' .
   '16351b78ee6831e9498746';
 
-my $mkey = Crypt::MagicSignatures::Key->new(n => $n, e => $e);
 
-# Key length matches modulus
-is(*{"${module}::_bitsize"}->($mkey->n), $mod, 'Key length');
-is(*{"${module}::_octet_len"}->($mkey->n), ($mod / 8), 'Key length');
-is($mkey->size, 1024, 'Correct Key size');
-
-done_testing;
-
-exit;
-
-
-
-
-
-
-
-
-
-print $mkey->verify($m, $s);
-
+print $mkey->verify($m, b64url_encode($s));
 
 $m = '7ad2f4bfbed0dba767ec7f106f4750376f2945c4c09624fbe022fe361706f8935a7252ea6f25a1' .
   '02523c5f04d847a62f92a239cef403c467b64f65367bb26ad9b1ee5d4db8f33e1946b10fc90a2a' .

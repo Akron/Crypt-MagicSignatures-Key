@@ -10,7 +10,8 @@ WriteMakefile(
   ABSTRACT     => 'MagicKeys for the Salmon Protocol',
   VERSION_FROM => 'lib/Crypt/MagicSignatures/Key.pm',
   BUILD_REQUIRES => {
-    'Test::More' => 0
+    'Test::More' => 0,
+    'Test::Output' => 0
   },
   PREREQ_PM => {
     'Math::Prime::Util' => '0.21', # 0.58

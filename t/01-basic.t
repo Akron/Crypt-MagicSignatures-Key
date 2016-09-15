@@ -52,11 +52,10 @@ is($hex2b64url, b64url_encode($test_msg), '_hex_to_b64url');
 my $b64url2hex = *{"${module}::_b64url_to_hex"}->(b64url_encode($test_msg));
 is($b64url2hex, $os2ip, '_b64url_to_hex');
 
+# test _b64url_to_hex with unknown characters
+$b64url2hex = *{"${module}::_b64url_to_hex"}->(',' . b64url_encode($test_msg) . ',');
+is($b64url2hex, $os2ip, '_b64url_to_hex');
 
-# Todo: check extreme values for d, e, n, sign, verify
-
-done_testing;
-exit;
 
 # MaxMin tests #
 ################
@@ -97,38 +96,10 @@ ok($i2osp, 'i2osp');
 $i2osp = *{"${module}::_i2osp"}->("a");
 ok(!$i2osp, 'i2osp');
 
+# test bitsize
+$bitsize = *{"${module}::_bitsize"}->($os2ip);
+is(994, $bitsize, 'bitsize');                    # 4
 
 
 done_testing;
 __END__
-
-
-# test bitsize
-my $bitsize = *{"${module}::_bitsize"}->($os2ip);
-is(231, $bitsize, 'bitsize');                    # 4
-
-# test octet_len
-my $octet_len = *{"${module}::_octet_len"}->($os2ip);
-is(29, $octet_len, 'octet_len');                 # 5
-
-# test b64url_encode
-my $b64url_encode = b64url_encode($test_msg);
-$b64url_encode =~ s/[\s=]+$//;
-is($b64url_encode, 'VGhpcyBpcyBhIHNtYWxsIG1lc3NhZ2UgdGVzdC4',
-   'b64url_encode');                               # 6
-
-# test b64url_decode
-my $b64url_decode = b64url_decode($b64url_encode);
-ok($b64url_decode eq $test_msg, 'b64url_decode');  # 7
-
-# test _hex_to_b64url
-my $hex2b64url = *{"${module}::_hex_to_b64url"}->($os2ip);
-$b64url_encode =~ s/[\s=]+$//;
-is($hex2b64url, b64url_encode($test_msg), '_hex_to_b64url');
-
-# test _b64url_to_hex
-my $b64url2hex = *{"${module}::_b64url_to_hex"}->(b64url_encode($test_msg));
-is($b64url2hex, $os2ip, '_b64url_to_hex');
-
-
-done_testing;

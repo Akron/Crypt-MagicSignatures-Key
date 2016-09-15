@@ -1,7 +1,8 @@
 #!/usr/bin/env perl
-use Test::More tests => 12;
+use Test::More tests => 15;
 use strict;
 use warnings;
+use Test::Output;
 no strict 'refs';
 
 use lib '../lib';
@@ -46,3 +47,16 @@ ok(!$mkey->verify(' ' . $msg, $sig), 'Not verified');
   ok(!$mkey->verify($msg, $sig . 'u'), 'Not verified');
 };
 
+# MiniMe-Test (Key - without d)
+my $encodedPublicKey = 'RSA.hkwS0EK5Mg1dpwA4shK5FNtHmo9F7sIP6gKJ5fyFWNotO'.
+  'bbbckq4dk4dhldMKF42b2FPsci109MF7NsdNYQ0kXd3jNs9VLCHUujxiafVjhw06hFNWBmv'.
+  'ptZud7KouRHz4Eq2sB-hM75MEn3IJElOquYzzUHi7Q2AMalJvIkG26c=.AQAB';
+ok($mkey = Crypt::MagicSignatures::Key->new($encodedPublicKey), 'Public key');
+
+stderr_like(
+  sub {
+    ok(!($mkey->sign($msg)), 'Signed');
+  },
+  qr/unable to sign/i,
+  'Only with public'
+);
