@@ -21,7 +21,7 @@ Crypt::MagicSignatures::Key - MagicKeys for the Salmon Protocol
 =head1 DESCRIPTION
 
 L<Crypt::MagicSignatures::Key> implements MagicKeys as described in the
-L<MagicSignatures Specification|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html>
+L<MagicSignatures Specification|https://github.com/salmon-protocol/salmon-protocol/blob/master/draft-panzer-magicsig-01.html>
 to sign messages of the L<Salmon Protocol|http://www.salmon-protocol.org/>.
 MagicSignatures is a "robust mechanism for digitally signing nearly arbitrary messages".
 See L<Crypt::MagicSignatures::Envelope> for using MagicKeys to sign MagicEnvelopes.
@@ -44,7 +44,7 @@ The MagicKey modulus.
   $mkey->e(3);
 
 The MagicKey public exponent.
-Defaults to C<65537>.
+Defaults to 65537.
 
 
 =head2 d
@@ -85,7 +85,7 @@ The MagicKey keysize in bits.
 
 
 The Constructor accepts MagicKeys in
-L<compact notation|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html#anchor13>
+L<compact notation|https://github.com/salmon-protocol/salmon-protocol/blob/master/draft-panzer-magicsig-01.html#L828-L853>
 or by attributes.
 
 
@@ -136,7 +136,7 @@ Returns a C<true> value on success and C<false> otherwise.
   my $priv_key = $mkey->to_string(1);
 
 Returns the public key as a string in
-L<compact notation|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html#anchor13>.
+L<compact notation|https://github.com/salmon-protocol/salmon-protocol/blob/master/draft-panzer-magicsig-01.html#L828-L853>.
 If a C<true> value is passed to the method,
 the full key (including the private exponent if existing)
 is returned.
