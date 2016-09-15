@@ -83,15 +83,19 @@ The MagicKey keysize in bits.
     e => 3
   );
 
-  $mkey = Crypt::MagicSignatures::Key->new(size => 1024);
-
 
 The Constructor accepts MagicKeys in
 L<compact notation|http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-01.html#anchor13>
 or by attributes.
 
-If no C<n> attribute is given and L<Math::Prime::Util>
-is installed, a new key will be generated.
+
+=head2 generate
+
+  my $mkey = Crypt::MagicSignatures::Key->new(size => 1024);
+
+Generate a new key. Requires L<Math::Prime::Util> to be installed.
+
+Accepts the attributes C<size> and C<e>.
 In case no C<size> attribute is given, the default key size
 for generation is 512 bits, which is also the minimum size.
 The maximum size is 4096 bits.
@@ -162,6 +166,7 @@ The function can be exported.
   print b64url_decode('VGhpcyBpcyBhIG1lc3NhZ2U=');
 
 Decodes a base-64 string with URL safe characters.
+Characters not part of the character set are silently ignored.
 The function can be exported.
 
 
