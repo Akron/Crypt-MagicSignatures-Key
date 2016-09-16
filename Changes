@@ -1,3 +1,11 @@
+0.16 2016-09-16
+        - Fixed _b64url_to_hex to return undef earlier.
+        - Improved test coverage:
+                 stmt   bran   cond    sub   time  total
+               ------ ------ ------ ------ ------ ------
+          From:  94.0   83.9   77.5  100.0  100.0   90.3
+          To:    94.9   89.0   87.5  100.0  100.0   93.1
+
 0.15 2016-09-15
         - Updated for Kwalitee tests.
         - Added Kwalitee test for release testing.

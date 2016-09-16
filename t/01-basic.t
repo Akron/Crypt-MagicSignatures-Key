@@ -100,6 +100,9 @@ ok(!$i2osp, 'i2osp');
 $bitsize = *{"${module}::_bitsize"}->($os2ip);
 is(994, $bitsize, 'bitsize');                    # 4
 
+$bitsize = *{"${module}::_bitsize"}->(0);
+is(0, $bitsize, 'Bitsize 0');
+
 
 done_testing;
 __END__

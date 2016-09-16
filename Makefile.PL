@@ -17,8 +17,8 @@ WriteMakefile(
     'Math::Prime::Util' => '0.21', # 0.58
     'Carp'         => 0,
     'Digest::SHA'  => 0,
-    'MIME::Base64' => 0,
-    'Math::BigInt' => 0,
+    'MIME::Base64' => '3.15',
+    'Math::BigInt' => '1.89',
     'Exporter'     => 0,
   },
   LICENSE => 'artistic_2',

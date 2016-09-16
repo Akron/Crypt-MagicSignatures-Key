@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-use Test::More tests => 15;
+use Test::More tests => 21;
 use strict;
 use warnings;
 use Test::Output;
@@ -58,5 +58,32 @@ stderr_like(
     ok(!($mkey->sign($msg)), 'Signed');
   },
   qr/unable to sign/i,
+  'Only with public'
+);
+
+# Verify empty
+stderr_like(
+  sub {
+    ok(!($mkey->verify), 'No msg and sig');
+  },
+  qr/No signature or message given/i,
+  'Only with public'
+);
+
+# Verify empty
+stderr_like(
+  sub {
+    ok(!($mkey->verify('Hallo', '===')), 'No valid sig');
+  },
+  qr/No signature given/i,
+  'Only with public'
+);
+
+# Verify empty
+stderr_like(
+  sub {
+    ok(!($mkey->verify('', 'hjhjghj')), 'No msg');
+  },
+  qr/No signature or message given/i,
   'Only with public'
 );

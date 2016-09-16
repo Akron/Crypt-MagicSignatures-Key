@@ -7,7 +7,7 @@ use Carp 'carp';
 use v5.10.1;
 
 our @CARP_NOT;
-our $VERSION = '0.15';
+our $VERSION = '0.15_1';
 
 use overload '""' => sub { $_[0]->to_string }, fallback => 1;
 
@@ -356,16 +356,25 @@ sub verify {
       $message,
       $encoded_message) =  @_;
 
-  # Delete whitespace and padding
-  $encoded_message =~ tr{=\t-\x0d }{}d;
-
+  # Missing parameters
   unless ($encoded_message && $message) {
     carp 'No signature or message given';
     return;
   };
 
-  return unless $self->n;
+  # Delete whitespace and padding
+  $encoded_message =~ tr{=\t-\x0d }{}d;
 
+  # Invalid message
+  unless ($encoded_message) {
+    carp 'No signature given';
+    return;
+  };
+
+  # No modulus
+  # return unless $self->n;
+
+  # Verify message
   _verify_emsa_pkcs1_v1_5(
     $self,
     $message,
@@ -379,17 +388,14 @@ sub verify {
 sub to_string {
   my $self = shift;
 
-  my $n = $self->n;
-  return '' unless $n;
+  # return '' unless $n; # Shouldn't be possible
 
-  my $e = $self->e;
+  # Convert modulus and exponent and add to component array
+  my @array = ('RSA', _hex_to_b64url($self->n), _hex_to_b64url($self->e));
 
-  # Convert modulus and exponent
-  $_ = _hex_to_b64url($_) for ($n, $e);
-
-  my @array = ('RSA', $n, $e);
-
-  push(@array, _hex_to_b64url($self->d)) if $_[0] && $self->d;
+  if ($_[0] && $self->d) {
+    push(@array, _hex_to_b64url($self->d));
+  };
 
   # Specification is not clear about $mkey =~ s/=+//g;
   join('.', @array);
@@ -432,7 +438,7 @@ sub b64url_decode {
 
 # Get octet length of n
 sub _emLen {
-  return 0 unless $_[0]->n;
+  # return 0 unless $_[0]->n;
   ($_[0]->[4] // ($_[0]->[4] = _octet_len( $_[0]->n )));
 };
 
@@ -604,7 +610,7 @@ sub _octet_len {
 
 # Returns the bitlength of the integer
 sub _bitsize {
-  my $int = Math::BigInt->new( shift );
+  my $int = Math::BigInt->new( $_[0] );
   return 0 unless $int;
   # Trim leading '0b'
   length( $int->as_bin ) - 2;
@@ -618,9 +624,8 @@ sub _b64url_to_hex {
   #         MagicSignatures/SignatureAlgRsaSha256.pm
 
   # Decode and convert b64url encoded hex number
-  Math::BigInt->new(
-    '0x' . unpack( 'H*', b64url_decode( shift ) )
-  );
+  my $b64 = b64url_decode( shift ) or return;
+  Math::BigInt->new('0x' . unpack( 'H*', $b64));
 };
 
 
