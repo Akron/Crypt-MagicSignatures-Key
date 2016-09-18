@@ -17,7 +17,8 @@ use strict;
 use warnings;
 use Test::Output;
 
-use_ok('Crypt::MagicSignatures::Key', qw/b64url_encode b64url_decode/);
+my $module = 'Crypt::MagicSignatures::Key';
+use_ok($module, qw/b64url_encode b64url_decode/);
 
 ok(my $obj = MyObj->new, 'New object created');
 
@@ -196,6 +197,28 @@ stderr_like(
   qr/d is not a number/,
   'Set d to NaN'
 );
+
+no strict 'refs';
+
+# test rsasp1
+stderr_like(
+  sub {
+    *{"${module}::_rsasp1"}->($key3, Math::BigInt->new($key3->n));
+  },
+  qr/Message representative out of range/,
+  'Out of range'
+);
+
+stderr_like(
+  sub {
+    *{"${module}::_rsasp1"}->($key3, Math::BigInt->new($key3->n+1));
+  },
+  qr/Message representative out of range/,
+  'Out of range'
+);
+
+
+
 
 done_testing;
 __END__

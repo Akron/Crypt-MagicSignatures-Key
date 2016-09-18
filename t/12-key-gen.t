@@ -124,4 +124,28 @@ stderr_like(
   qr/key size/i,
   'Too large'
 );
+
+{
+  no strict 'refs';
+  no warnings 'redefine';
+  no warnings 'once';
+
+  $Crypt::MagicSignatures::Key::MAX_GEN_ROUNDS = 5;
+
+  # Overwrite random_nbit_prime generation to fail
+  *{'Math::Prime::Util::RandomPrimes::random_nbit_prime'} = sub {
+    return 5;
+  };
+
+  is(random_nbit_prime(456), 5, 'Correctly overwritten');
+
+  stderr_like(
+    sub {
+      ok(!Crypt::MagicSignatures::Key->generate(), 'Key Generation');
+    },
+    qr/maximum/i,
+    'Maximum rounds'
+  );
+}
+
 done_testing;

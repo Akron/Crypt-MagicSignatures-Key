@@ -43,6 +43,9 @@ is($b64url_encode, 'VGhpcyBpcyBhIHNtYWxsIG1lc3NhZ2UgdGVzdC4',
 my $b64url_decode = b64url_decode($b64url_encode);
 ok($b64url_decode eq $test_msg, 'b64url_decode');  # 7
 
+is('', b64url_decode(), 'No Message passed');
+is('', b64url_encode(), 'No Message passed');
+
 # test _hex_to_b64url
 my $hex2b64url = *{"${module}::_hex_to_b64url"}->($os2ip);
 $b64url_encode =~ s/[\s=]+$//;
@@ -102,7 +105,6 @@ is(994, $bitsize, 'bitsize');                    # 4
 
 $bitsize = *{"${module}::_bitsize"}->(0);
 is(0, $bitsize, 'Bitsize 0');
-
 
 done_testing;
 __END__

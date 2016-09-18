@@ -99,6 +99,7 @@ Accepts the attributes C<size> and C<e>.
 In case no C<size> attribute is given, the default key size
 for generation is 512 bits, which is also the minimum size.
 The maximum size is 4096 bits.
+Random prime trials are limited to 100 rounds.
 
 
 =head2 sign

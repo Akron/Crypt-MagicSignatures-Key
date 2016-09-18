@@ -7,11 +7,10 @@ use Carp 'carp';
 use v5.10.1;
 
 our @CARP_NOT;
-our $VERSION = '0.15_1';
-
-use overload '""' => sub { $_[0]->to_string }, fallback => 1;
+our $VERSION = '0.16';
 
 our $DEFAULT_KEY_SIZE = 512;
+our $MAX_GEN_ROUNDS = 100;
 
 # Maximum number of tests for random prime generation = 100
 # Range of valid key sizes = 512 - 4096
@@ -24,7 +23,7 @@ our $DEFAULT_KEY_SIZE = 512;
 # TODO: Improve tests for _bitsize, b64url_encode, b64url_decode,
 #       hex2b64url, b64url2hex
 
-
+use overload '""' => sub { $_[0]->to_string }, fallback => 1;
 use Digest::SHA qw/sha256 sha256_hex/;
 use MIME::Base64 qw(decode_base64 encode_base64);
 
@@ -198,7 +197,9 @@ sub generate {
   my $psize = int( $size / 2 );
 
   my $n;
-  my $m = 100; # Maximum number of rounds
+
+  # Maximum number of rounds
+  my $m = $MAX_GEN_ROUNDS;
 
   my ($p, $q);
 
@@ -751,6 +752,7 @@ Accepts the attributes C<size> and C<e>.
 In case no C<size> attribute is given, the default key size
 for generation is 512 bits, which is also the minimum size.
 The maximum size is 4096 bits.
+Random prime trials are limited to 100 rounds.
 
 
 =head2 sign

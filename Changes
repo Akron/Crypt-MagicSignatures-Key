@@ -1,10 +1,10 @@
-0.16 2016-09-16
+0.16 2016-09-18
         - Fixed _b64url_to_hex to return undef earlier.
-        - Improved test coverage:
+        - Improved test coverage (with Math::Prime::Util):
                  stmt   bran   cond    sub   time  total
                ------ ------ ------ ------ ------ ------
           From:  94.0   83.9   77.5  100.0  100.0   90.3
-          To:    94.9   89.0   87.5  100.0  100.0   93.1
+          To:    98.3   93.6   87.5  100.0  100.0   96.2
 
 0.15 2016-09-15
         - Updated for Kwalitee tests.
@@ -14,7 +14,7 @@
         - Improved error handling in constructor code.
         - Removed dead code in constructor and attribute code.
         - Added tests for error handling in constructor code.
-        - Improved test coverage:
+        - Improved test coverage (with Math::Prime::Util):
                  stmt   bran   cond    sub   time  total
                ------ ------ ------ ------ ------ ------
           From:  91.8   59.5   50.0  100.0  100.0   77.4
