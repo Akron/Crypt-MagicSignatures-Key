@@ -37,9 +37,6 @@ our @EXPORT_OK = qw(b64url_encode b64url_decode);
 # Primitive for Math::Prime::Util
 sub random_nbit_prime;
 
-# Primitive for Bytes::Random::Secure::random_bytes
-sub random_bytes;
-
 our $GENERATOR;
 
 # Load Math::Prime::Util and Math::Random::Secure
