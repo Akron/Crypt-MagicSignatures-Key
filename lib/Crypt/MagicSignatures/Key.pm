@@ -7,7 +7,7 @@ use Carp 'carp';
 use v5.10.1;
 
 our @CARP_NOT;
-our $VERSION = '0.16';
+our $VERSION = '0.17';
 
 our $DEFAULT_KEY_SIZE = 512;
 our $MAX_GEN_ROUNDS = 100;
@@ -36,6 +36,9 @@ our @EXPORT_OK = qw(b64url_encode b64url_decode);
 
 # Primitive for Math::Prime::Util
 sub random_nbit_prime;
+
+# Primitive for Bytes::Random::Secure::random_bytes
+sub random_bytes;
 
 our $GENERATOR;
 
@@ -385,6 +388,7 @@ sub verify {
 };
 
 
+
 # Return MagicKey-String (public only)
 sub to_string {
   my $self = shift;
@@ -472,6 +476,7 @@ sub _verify_emsa_pkcs1_v1_5 {
 
   # The length of the signature is not
   # equivalent to the length of the RSA modulus
+  # TODO: This probably needs to check octetlength
   if (length($S) != $k) {
     carp 'Invalid signature';
     return;
@@ -492,7 +497,7 @@ sub _rsasp1 {
   # Key, message
   my ($K, $m) = @_;
 
-  if ($m >= $K->n) {
+  if ($m >= $K->n || $m < 0) {
     carp 'Message representative out of range';
     return;
   };
@@ -674,7 +679,7 @@ Crypt::MagicSignatures::Key - MagicKeys for the Salmon Protocol
 =head1 DESCRIPTION
 
 L<Crypt::MagicSignatures::Key> implements MagicKeys as described in the
-L<MagicSignatures Specification|https://github.com/salmon-protocol/salmon-protocol/blob/master/draft-panzer-magicsig-01.html>
+L<MagicSignatures Specification|https://cdn.rawgit.com/salmon-protocol/salmon-protocol/master/draft-panzer-magicsig-01.html>
 to sign messages of the L<Salmon Protocol|http://www.salmon-protocol.org/>.
 MagicSignatures is a "robust mechanism for digitally signing nearly arbitrary messages".
 See L<Crypt::MagicSignatures::Envelope> for using MagicKeys to sign MagicEnvelopes.
@@ -738,7 +743,7 @@ The MagicKey keysize in bits.
 
 
 The Constructor accepts MagicKeys in
-L<compact notation|https://github.com/salmon-protocol/salmon-protocol/blob/master/draft-panzer-magicsig-01.html#L828-L853>
+L<compact notation|https://cdn.rawgit.com/salmon-protocol/salmon-protocol/master/draft-panzer-magicsig-01.html#anchor13>
 or by attributes.
 
 
@@ -790,7 +795,7 @@ Returns a C<true> value on success and C<false> otherwise.
   my $priv_key = $mkey->to_string(1);
 
 Returns the public key as a string in
-L<compact notation|https://github.com/salmon-protocol/salmon-protocol/blob/master/draft-panzer-magicsig-01.html#L828-L853>.
+L<compact notation|https://cdn.rawgit.com/salmon-protocol/salmon-protocol/master/draft-panzer-magicsig-01.html#anchor13>.
 If a C<true> value is passed to the method,
 the full key (including the private exponent if existing)
 is returned.

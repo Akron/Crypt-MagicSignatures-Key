@@ -2,6 +2,7 @@
 use Test::More;
 use Math::BigInt try => 'GMP,Pari';
 use Test::Output;
+use Sub::Util qw/subname/;
 use strict;
 use warnings;
 no strict 'refs';
@@ -132,10 +133,14 @@ stderr_like(
 
   $Crypt::MagicSignatures::Key::MAX_GEN_ROUNDS = 5;
 
+  my $name = subname( \&random_nbit_prime );
+
+  is($name, 'Math::Prime::Util::random_nbit_prime', 'Correct subname');
+
   # Overwrite random_nbit_prime generation to fail
-  *{'Math::Prime::Util::RandomPrimes::random_nbit_prime'} = sub {
-    return 5;
-  };
+  *{"$name"} = *{'Math::Prime::Util::RandomPrimes::random_nbit_prime'} = sub {
+      return 5;
+    };
 
   is(random_nbit_prime(456), 5, 'Correctly overwritten');
 

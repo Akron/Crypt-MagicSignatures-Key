@@ -1,3 +1,7 @@
+0.17 2016-10-01
+        - Fixed cpantesters issue where random_nbit_prime
+          wasn't overwritten in key gen test.
+
 0.16 2016-09-18
         - Fixed _b64url_to_hex to return undef earlier.
         - Improved test coverage (with Math::Prime::Util):
