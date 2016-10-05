@@ -7,7 +7,7 @@ use Carp 'carp';
 use v5.10.1;
 
 our @CARP_NOT;
-our $VERSION = '0.17_1';
+our $VERSION = '0.18';
 
 our $DEFAULT_KEY_SIZE = 512;
 our $MAX_GEN_ROUNDS = 100;
@@ -59,7 +59,7 @@ sub new {
   if (my $bl = blessed($_[0])) {
 
     # It's already a MagicKey object - fine!
-    return $_[0] if $bl eq __PACKAGE__;
+    return $_[0] if $bl->isa(__PACKAGE__);
   }
 
   # Do not support references

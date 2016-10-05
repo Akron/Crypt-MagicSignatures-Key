@@ -1,3 +1,7 @@
+0.18 2016-10-05
+        - Updated requirements for testing.
+        - Improved inheritance possibilities.
+
 0.17 2016-10-01
         - Fixed cpantesters issue where random_nbit_prime
           wasn't overwritten in key gen test.

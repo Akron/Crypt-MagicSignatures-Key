@@ -11,6 +11,17 @@ use warnings;
 
 sub new { bless {}, shift };
 
+
+package InheritanceObject;
+use parent 'Crypt::MagicSignatures::Key';
+use strict;
+use warnings;
+
+sub hello {
+  print "Hi World!";
+};
+
+
 package main;
 use Test::More;
 use strict;
@@ -40,6 +51,18 @@ stderr_like(
   'Invalid object'
 );
 
+# MiniMe-Test
+my $encodedPrivateKey = 'RSA.hkwS0EK5Mg1dpwA4shK5FNtHmo9F7sIP6gKJ5fyFWNotO'.
+  'bbbckq4dk4dhldMKF42b2FPsci109MF7NsdNYQ0kXd3jNs9VLCHUujxiafVjhw06hFNWBmv'.
+  'ptZud7KouRHz4Eq2sB-hM75MEn3IJElOquYzzUHi7Q2AMalJvIkG26c=.AQAB.JrT8YywoB'.
+  'oYVrRGCRcjhsWI2NBUBWfxy68aJilEK-f4ANPdALqPcoLSJC_RTTftBgz6v4pTv2zqiJY9N'.
+  'zuPo5mijN4jJWpCA-3HOr9w8Kf8uLwzMVzNJNWD_cCqS5XjWBwWTObeMexrZTgYqhymbfxx'.
+  'z6Nqxx352oPh4vycnXOk=';
+ok($obj = InheritanceObject->new($encodedPrivateKey), 'Inheritance object');
+
+is(ref Crypt::MagicSignatures::Key->new($obj), 'InheritanceObject', 'Inheritance is fine');
+
+
 stderr_like(
   sub {
     Crypt::MagicSignatures::Key->new({ n => 2 });
@@ -66,7 +89,7 @@ stderr_like(
 );
 
 # MiniMe-Test (Key - shortened)
-my $encodedPrivateKey = 'RSA.' . # Missing
+$encodedPrivateKey = 'RSA.' . # Missing
   '.AQAB.JrT8YywoB'.
   'oYVrRGCRcjhsWI2NBUBWfxy68aJilEK-f4ANPdALqPcoLSJC_RTTftBgz6v4pTv2zqiJY9N'.
   'zuPo5mijN4jJWpCA-3HOr9w8Kf8uLwzMVzNJNWD_cCqS5XjWBwWTObeMexrZTgYqhymbfxx'.

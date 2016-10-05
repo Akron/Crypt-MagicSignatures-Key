@@ -12,7 +12,7 @@ WriteMakefile(
   BUILD_REQUIRES => {
     'Test::More' => 0,
     'Test::Output' => 0,
-    'Scalar::List::Utils' => 0
+    'Sub::Util' => 0
   },
   PREREQ_PM => {
     'Math::Prime::Util' => '0.21', # 0.58
