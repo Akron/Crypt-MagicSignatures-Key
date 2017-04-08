@@ -126,6 +126,7 @@ stderr_like(
   'Too large'
 );
 
+
 {
   no strict 'refs';
   no warnings 'redefine';
@@ -135,14 +136,19 @@ stderr_like(
 
   my $name = subname( \&random_nbit_prime );
 
+
   is($name, 'Math::Prime::Util::random_nbit_prime', 'Correct subname');
 
   # Overwrite random_nbit_prime generation to fail
-  *{"$name"} = *{'Math::Prime::Util::RandomPrimes::random_nbit_prime'} = sub {
+  *{"$name"} =
+    *{'Math::Prime::Util::RandomPrimes::random_nbit_prime'} =
+    *{'Math::Prime::Util::GMP::random_nbit_prime'} =
+    sub ($) {
       return 5;
     };
 
   is(random_nbit_prime(456), 5, 'Correctly overwritten');
+
 
   stderr_like(
     sub {

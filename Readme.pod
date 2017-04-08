@@ -21,7 +21,7 @@ Crypt::MagicSignatures::Key - MagicKeys for the Salmon Protocol
 =head1 DESCRIPTION
 
 L<Crypt::MagicSignatures::Key> implements MagicKeys as described in the
-L<MagicSignatures Specification|https://github.com/salmon-protocol/salmon-protocol/blob/master/draft-panzer-magicsig-01.html>
+L<MagicSignatures Specification|https://cdn.rawgit.com/salmon-protocol/salmon-protocol/master/draft-panzer-magicsig-01.html>
 to sign messages of the L<Salmon Protocol|http://www.salmon-protocol.org/>.
 MagicSignatures is a "robust mechanism for digitally signing nearly arbitrary messages".
 See L<Crypt::MagicSignatures::Envelope> for using MagicKeys to sign MagicEnvelopes.
@@ -85,7 +85,7 @@ The MagicKey keysize in bits.
 
 
 The Constructor accepts MagicKeys in
-L<compact notation|https://github.com/salmon-protocol/salmon-protocol/blob/master/draft-panzer-magicsig-01.html#L828-L853>
+L<compact notation|https://cdn.rawgit.com/salmon-protocol/salmon-protocol/master/draft-panzer-magicsig-01.html#anchor13>
 or by attributes.
 
 
@@ -137,7 +137,7 @@ Returns a C<true> value on success and C<false> otherwise.
   my $priv_key = $mkey->to_string(1);
 
 Returns the public key as a string in
-L<compact notation|https://github.com/salmon-protocol/salmon-protocol/blob/master/draft-panzer-magicsig-01.html#L828-L853>.
+L<compact notation|https://cdn.rawgit.com/salmon-protocol/salmon-protocol/master/draft-panzer-magicsig-01.html#anchor13>.
 If a C<true> value is passed to the method,
 the full key (including the private exponent if existing)
 is returned.
@@ -187,7 +187,8 @@ L<Math::Prime::Util::GMP> and L<Math::Random::ISAAC::XS>
 =head1 KNOWN BUGS AND LIMITATIONS
 
 The signing and verification is not guaranteed to be
-compatible with other implementations!
+compatible with other implementations, as the specification
+changed over time!
 
 
 =head1 SEE ALSO
@@ -205,7 +206,7 @@ L<https://github.com/sivy/Salmon>.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2012-2016, L<Nils Diewald|http://nils-diewald.de/>.
+Copyright (C) 2012-2017, L<Nils Diewald|http://nils-diewald.de/>.
 
 This program is free software, you can redistribute it
 and/or modify it under the terms of the Artistic License version 2.0.

@@ -13,6 +13,7 @@ t/11-node-ostatus.t
 t/12-key-gen.t
 t/14-object.t
 t/15-to_string.t
+t/16-ostatus2-gem.t
 Readme.pod
 Changes
 MANIFEST

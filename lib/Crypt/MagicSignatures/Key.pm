@@ -7,7 +7,7 @@ use Carp 'carp';
 use v5.10.1;
 
 our @CARP_NOT;
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 our $DEFAULT_KEY_SIZE = 512;
 our $MAX_GEN_ROUNDS = 100;
@@ -842,7 +842,8 @@ L<Math::Prime::Util::GMP> and L<Math::Random::ISAAC::XS>
 =head1 KNOWN BUGS AND LIMITATIONS
 
 The signing and verification is not guaranteed to be
-compatible with other implementations!
+compatible with other implementations, as the specification
+changed over time!
 
 
 =head1 SEE ALSO
@@ -860,7 +861,7 @@ L<https://github.com/sivy/Salmon>.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2012-2016, L<Nils Diewald|http://nils-diewald.de/>.
+Copyright (C) 2012-2017, L<Nils Diewald|http://nils-diewald.de/>.
 
 This program is free software, you can redistribute it
 and/or modify it under the terms of the Artistic License version 2.0.
