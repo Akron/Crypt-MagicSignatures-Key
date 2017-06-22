@@ -1,3 +1,6 @@
+0.19_1 2017-06-22
+        - Fixed more random_nbit_prime overloading.
+
 0.19 2017-04-08
         - Added test from OStatus2 gem (used in Mastodon).
         - Fixed random_nbit_prime overloading for GMP.
